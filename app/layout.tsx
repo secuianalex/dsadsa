@@ -4,25 +4,23 @@ import type { Metadata } from "next"
 import NavBar from "@/components/NavBar"
 import Providers from "@/components/Providers"
 import ThemeScript from "@/components/ThemeScript"
-import { Inter } from "next/font/google"
+// import { Inter } from "next/font/google"
 
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-})
+// const inter = Inter({
+//   subsets: ["latin"],
+//   display: "swap",
+//   variable: "--font-inter",
+// })
 
 export const metadata: Metadata = {
   title: "LearnMe",
   description: "Learn programming by doing. Levels, projects, trophies.",
-  icons: {
-    icon: "/favicon.svg", // favicon in /public
-  },
+  icons: { icon: "/favicon.svg" },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en">
       <body>
         <ThemeScript />
         <Providers>
