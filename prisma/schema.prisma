@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id       String     @id @default(cuid())
+  name     String?
+  email    String?    @unique
+  password String?
+  image    String?
+  accounts Account[]
+  sessions Session[]
+  progress Progress[]
+  trophies Trophy[]
+}
+
+model Language {
+  id     String         @id @default(cuid())
+  slug   String         @unique
+  name   String
+  levels Level[]
+  paths  PathLanguage[]
+}
+
+model Level {
+  id         String     @id @default(cuid())
+  number     Int
+  languageId String
+  language   Language   @relation(fields: [languageId], references: [id])
+  courses    Course[]
+  freestyle  Freestyle?
+
+  @@index([languageId])
+}
+
+model Course {
+  id       String     @id @default(cuid())
+  title    String
+  content  String
+  levelId  String
+  level    Level      @relation(fields: [levelId], references: [id])
+  exam     Exam?
+  progress Progress[]
+
+  @@index([levelId])
+}
+
+model Exam {
+  id       String     @id @default(cuid())
+  courseId String     @unique
+  course   Course     @relation(fields: [courseId], references: [id])
+  prompt   String // placeholder text (can be replaced by AI later)
+  progress Progress[]
+}
+
+model Freestyle {
+  id       String     @id @default(cuid())
+  levelId  String     @unique
+  level    Level      @relation(fields: [levelId], references: [id])
+  prompt   String
+  progress Progress[]
+}
+
+model Progress {
+  id     String  @id @default(cuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  // one of these will be set depending on what was completed
+  courseId    String?
+  course      Course?    @relation(fields: [courseId], references: [id])
+  examId      String?
+  exam        Exam?      @relation(fields: [examId], references: [id])
+  freestyleId String?
+  freestyle   Freestyle? @relation(fields: [freestyleId], references: [id])
+
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([courseId])
+  @@index([examId])
+  @@index([freestyleId])
+}
+
+model Trophy {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  title       String
+  description String
+  earnedAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Path {
+  id          String         @id @default(cuid())
+  slug        String         @unique
+  title       String
+  description String
+  languages   PathLanguage[] // many-to-many via join model
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model PathLanguage {
+  id         String   @id @default(cuid())
+  pathId     String
+  languageId String
+  path       Path     @relation(fields: [pathId], references: [id], onDelete: Cascade)
+  language   Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
+
+  @@unique([pathId, languageId]) // prevent duplicates
+}
