@@ -12,9 +12,11 @@ async function getExam(courseId: string) {
   return data.exam as { id: string; prompt: string }
 }
 
-export default async function ExamPage({ params }: { params: { id: string } }) {
+export default async function ExamPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  
   const course = await prisma.course.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { level: { include: { language: true } } },
   })
   if (!course) return <div className="p-6">Course not found.</div>

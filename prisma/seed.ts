@@ -2,9 +2,44 @@ import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
 const langs = [
-  "Python", "JavaScript", "Java", "C#", "C", "C++", "Go", "Rust", "PHP", "TypeScript",
-  "Kotlin", "Swift", "Ruby", "Dart", "Scala", "Haskell", "Elixir", "Clojure", "R",
-  "MATLAB", "SQL", "Bash", "PowerShell", "Perl", "Lua"
+  // Core Web Technologies
+  "HTML", "CSS", "JavaScript", "TypeScript",
+  
+  // Popular Programming Languages
+  "Python", "Java", "C#", "C", "C++", "Go", "Rust", "PHP", "Ruby", "Swift", "Kotlin", "Dart",
+  
+  // Functional & Modern Languages
+  "Scala", "Haskell", "Elixir", "Clojure", "F#", "OCaml", "Erlang",
+  
+  // Data & Analytics
+  "R", "MATLAB", "Julia", "SAS", "Stata",
+  
+  // Database & Query Languages
+  "SQL", "PL/SQL", "T-SQL", "MongoDB", "GraphQL",
+  
+  // Scripting & Automation
+  "Bash", "PowerShell", "Perl", "Lua", "Groovy", "VBScript",
+  
+  // Mobile & Cross-platform
+  "React Native", "Flutter", "Xamarin", "Ionic",
+  
+  // Web Frameworks & Libraries
+  "React", "Vue.js", "Angular", "Node.js", "Express.js", "Django", "Flask", "Laravel", "Spring",
+  
+  // Cloud & DevOps
+  "Docker", "Kubernetes", "Terraform", "Ansible", "Jenkins", "Git",
+  
+  // Game Development
+  "Unity", "Unreal Engine", "Godot", "GameMaker",
+  
+  // AI & Machine Learning
+  "TensorFlow", "PyTorch", "Scikit-learn", "Pandas", "NumPy",
+  
+  // Low-level & Embedded
+  "Assembly", "VHDL", "Verilog", "Arduino", "Raspberry Pi",
+  
+  // Other Popular Technologies
+  "Svelte", "Next.js", "Nuxt.js", "Gatsby", "Webpack", "Babel", "ESLint", "Prettier"
 ]
 
 async function main() {
@@ -89,30 +124,94 @@ async function main() {
 
   const pathsData = [
     {
-      slug: "frontend",
+      slug: "web-development",
+      title: "Web Development",
+      description: "Build modern web applications with frontend and backend technologies.",
+      slugs: ["html", "css", "javascript", "typescript", "php", "ruby", "python", "node-js", "express-js"],
+    },
+    {
+      slug: "frontend-development",
       title: "Frontend Development",
-      description: "Build modern web apps with JavaScript, TypeScript, and UI frameworks.",
-      slugs: ["javascript", "typescript"], // add html/css later if you add them as languages
+      description: "Create interactive user interfaces and modern web experiences.",
+      slugs: ["html", "css", "javascript", "typescript", "react", "vue-js", "angular", "svelte", "next-js", "nuxt-js", "gatsby"],
     },
     {
-      slug: "data-science",
-      title: "Data Science",
-      description: "Analyze data, build models, and visualize insights.",
-      slugs: ["python", "r", "sql"],
+      slug: "backend-development",
+      title: "Backend Development",
+      description: "Build robust server-side applications and APIs.",
+      slugs: ["python", "java", "c-", "php", "ruby", "go", "rust", "node-js", "express-js", "django", "flask", "laravel", "spring"],
     },
     {
-      slug: "systems",
+      slug: "data-science-analytics",
+      title: "Data Science & Analytics",
+      description: "Analyze data, build models, and create visualizations.",
+      slugs: ["python", "r", "sql", "matlab", "julia", "sas", "stata", "tensorflow", "pytorch", "scikit-learn", "pandas", "numpy"],
+    },
+    {
+      slug: "systems-programming",
       title: "Systems Programming",
-      description: "Low-level, high-performance software and tooling.",
-      // FIXED: use "c-" to match your slug generator result for C++/C#
-      // If your "C++" ended up as "c-" (due to replacement), include that here.
-      slugs: ["c", "c-", "rust", "go"],
+      description: "Low-level programming for performance-critical applications.",
+      slugs: ["c", "c-", "rust", "go", "assembly"],
     },
     {
-      slug: "mobile",
+      slug: "mobile-development",
       title: "Mobile Development",
-      description: "Create iOS and Android apps with Swift, Kotlin, and Dart.",
-      slugs: ["swift", "kotlin", "dart"],
+      description: "Create iOS and Android applications.",
+      slugs: ["swift", "kotlin", "dart", "react-native", "flutter", "xamarin", "ionic"],
+    },
+    {
+      slug: "functional-programming",
+      title: "Functional Programming",
+      description: "Learn functional programming paradigms and languages.",
+      slugs: ["haskell", "elixir", "clojure", "scala", "f-", "ocaml", "erlang"],
+    },
+    {
+      slug: "scripting-automation",
+      title: "Scripting & Automation",
+      description: "Automate tasks and build tools with scripting languages.",
+      slugs: ["python", "bash", "powershell", "perl", "lua", "groovy", "vbscript"],
+    },
+    {
+      slug: "enterprise-development",
+      title: "Enterprise Development",
+      description: "Build large-scale business applications and systems.",
+      slugs: ["java", "c-", "scala", "sql", "pl-sql", "t-sql", "spring"],
+    },
+    {
+      slug: "game-development",
+      title: "Game Development",
+      description: "Create games and interactive entertainment applications.",
+      slugs: ["c-", "lua", "python", "javascript", "unity", "unreal-engine", "godot", "gamemaker"],
+    },
+    {
+      slug: "cloud-devops",
+      title: "Cloud & DevOps",
+      description: "Deploy, manage, and scale applications in the cloud.",
+      slugs: ["docker", "kubernetes", "terraform", "ansible", "jenkins", "git", "bash", "powershell"],
+    },
+    {
+      slug: "ai-machine-learning",
+      title: "AI & Machine Learning",
+      description: "Build intelligent systems and machine learning models.",
+      slugs: ["python", "r", "julia", "tensorflow", "pytorch", "scikit-learn", "pandas", "numpy", "matlab"],
+    },
+    {
+      slug: "embedded-systems",
+      title: "Embedded Systems",
+      description: "Program microcontrollers and embedded devices.",
+      slugs: ["c", "c-", "assembly", "vhdl", "verilog", "arduino", "raspberry-pi"],
+    },
+    {
+      slug: "full-stack-development",
+      title: "Full Stack Development",
+      description: "Master both frontend and backend development.",
+      slugs: ["html", "css", "javascript", "typescript", "react", "node-js", "express-js", "python", "django", "sql", "mongodb"],
+    },
+    {
+      slug: "modern-web-frameworks",
+      title: "Modern Web Frameworks",
+      description: "Build with the latest web frameworks and tools.",
+      slugs: ["react", "vue-js", "angular", "svelte", "next-js", "nuxt-js", "gatsby", "webpack", "babel", "eslint", "prettier"],
     },
   ]
 

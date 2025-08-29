@@ -8,8 +8,18 @@ export default function ThemeToggle() {
 
   React.useEffect(() => {
     setMounted(true)
-    const isDark = document.documentElement.classList.contains("dark")
-    setDark(isDark)
+    // Check if theme is stored in localStorage
+    const storedTheme = localStorage.getItem("theme")
+    if (storedTheme) {
+      const isDark = storedTheme === "dark"
+      setDark(isDark)
+      document.documentElement.classList.toggle("dark", isDark)
+    } else {
+      // Fall back to system preference
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+      setDark(prefersDark)
+      document.documentElement.classList.toggle("dark", prefersDark)
+    }
   }, [])
 
   function toggle() {
@@ -17,13 +27,17 @@ export default function ThemeToggle() {
     const next = !dark
     setDark(next)
     root.classList.toggle("dark", next)
-    try { localStorage.setItem("theme", next ? "dark" : "light") } catch {}
+    try { 
+      localStorage.setItem("theme", next ? "dark" : "light") 
+    } catch (e) {
+      console.warn("Failed to save theme preference:", e)
+    }
   }
 
   return (
     <button
       onClick={toggle}
-      className="px-3 py-1.5 rounded-md border text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
+      className="px-3 py-1.5 rounded-md border border-gray-300 dark:border-gray-600 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
       aria-label="Toggle dark mode"
       title="Toggle dark mode"
     >

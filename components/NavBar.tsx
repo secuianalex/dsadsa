@@ -11,10 +11,13 @@ const LINKS = [
 
 export default function NavBar() {
   return (
-    <nav className="border-b border-white/10 backdrop-blur bg-black/20 sticky top-0 z-50">
+    <nav className="border-b backdrop-blur sticky top-0 z-50" style={{
+      borderColor: 'var(--card-border)',
+      backgroundColor: 'var(--card-bg)'
+    }}>
       <div className="mx-auto flex items-center justify-between w-full max-w-[72rem] px-4 md:px-6 lg:px-8 h-14">
         {/* Logo + Brand */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
+        <Link href="/" className="flex items-center gap-2 font-bold text-lg" style={{ color: 'var(--text-primary)' }}>
           <Image src="/logo-mark.svg" alt="LearnMe" width={28} height={28} />
           <span className="hidden sm:inline">LearnMe</span>
         </Link>
@@ -26,6 +29,7 @@ export default function NavBar() {
               key={link.href}
               href={link.href}
               className="hover:text-blue-400 transition-colors"
+              style={{ color: 'var(--text-primary)' }}
             >
               {link.label}
             </Link>
