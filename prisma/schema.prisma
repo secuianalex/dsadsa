@@ -46,49 +46,35 @@ model User {
 }
 
 model Language {
-  id     String         @id @default(cuid())
-  slug   String         @unique
-  name   String
-  levels Level[]
-  paths  PathLanguage[]
+  id       String         @id @default(cuid())
+  slug     String         @unique
+  name     String
+  lessons  Lesson[]
+  paths    PathLanguage[]
 }
 
-model Level {
-  id         String     @id @default(cuid())
-  number     Int
-  languageId String
-  language   Language   @relation(fields: [languageId], references: [id])
-  courses    Course[]
-  freestyle  Freestyle?
+model Lesson {
+  id          String     @id @default(cuid())
+  number      Int
+  title       String
+  content     String     // Detailed lesson content
+  exercise    String     // Practice exercise description
+  difficulty  String     // "beginner", "intermediate", "advanced"
+  estimatedTime Int      // Estimated time in minutes
+  languageId  String
+  language    Language   @relation(fields: [languageId], references: [id])
+  exam        Exam?
+  progress    Progress[]
 
   @@index([languageId])
-}
-
-model Course {
-  id       String     @id @default(cuid())
-  title    String
-  content  String
-  levelId  String
-  level    Level      @relation(fields: [levelId], references: [id])
-  exam     Exam?
-  progress Progress[]
-
-  @@index([levelId])
+  @@unique([languageId, number])
 }
 
 model Exam {
   id       String     @id @default(cuid())
-  courseId String     @unique
-  course   Course     @relation(fields: [courseId], references: [id])
-  prompt   String // placeholder text (can be replaced by AI later)
-  progress Progress[]
-}
-
-model Freestyle {
-  id       String     @id @default(cuid())
-  levelId  String     @unique
-  level    Level      @relation(fields: [levelId], references: [id])
-  prompt   String
+  lessonId String     @unique
+  lesson   Lesson     @relation(fields: [lessonId], references: [id])
+  prompt   String     // Exam prompt for the lesson
   progress Progress[]
 }
 
@@ -98,21 +84,18 @@ model Progress {
   user   User?   @relation(fields: [userId], references: [id])
 
   // one of these will be set depending on what was completed
-  courseId    String?
-  course      Course?    @relation(fields: [courseId], references: [id])
-  examId      String?
-  exam        Exam?      @relation(fields: [examId], references: [id])
-  freestyleId String?
-  freestyle   Freestyle? @relation(fields: [freestyleId], references: [id])
+  lessonId String?
+  lesson   Lesson? @relation(fields: [lessonId], references: [id])
+  examId   String?
+  exam     Exam?   @relation(fields: [examId], references: [id])
 
   completed Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
-  @@index([courseId])
+  @@index([lessonId])
   @@index([examId])
-  @@index([freestyleId])
 }
 
 model Trophy {

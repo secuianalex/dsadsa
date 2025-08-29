@@ -31,7 +31,7 @@ export default async function HomePage() {
           Learn programming by building real projects
         </h1>
         <p className="text-gray-400 max-w-2xl mx-auto">
-          Master 80+ languages and technologies, unlock levels, complete projects, and earn
+          Master 80+ languages and technologies through progressive lessons, unlock achievements, complete projects, and earn
           trophies while you learn. Get personalized learning plans from our AI assistant.
         </p>
         <div className="flex justify-center gap-4 mt-6">
@@ -96,13 +96,13 @@ export default async function HomePage() {
         <div className="grid md:grid-cols-3 gap-6">
           <div className="card p-6 text-center">
             <div className="w-12 h-12 bg-brand-500 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <span className="text-white text-xl">🎯</span>
+              <span className="text-white text-xl">📚</span>
             </div>
             <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
-              Personalized Learning
+              Progressive Lessons
             </h3>
             <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-              Get custom learning plans from our AI assistant based on your goals and experience level.
+              Learn step-by-step with carefully crafted lessons that build your skills from beginner to advanced.
             </p>
           </div>
           
@@ -114,7 +114,7 @@ export default async function HomePage() {
               Project-Based Learning
             </h3>
             <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-              Learn by building real projects, completing challenges, and earning trophies.
+              Learn by building real projects, completing challenges, and earning trophies for your achievements.
             </p>
           </div>
           
@@ -126,7 +126,7 @@ export default async function HomePage() {
               80+ Technologies
             </h3>
             <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-              From web development to AI, mobile apps to game development - we cover it all.
+              From web development to AI, mobile apps to game development - we cover it all with comprehensive lessons.
             </p>
           </div>
         </div>

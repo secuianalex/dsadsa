@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { prisma } from "@/lib/prisma"
@@ -12,111 +13,120 @@ export default async function PathPage({ params }: { params: Promise<{ slug: str
         include: {
           language: {
             include: {
-              levels: {
+              lessons: {
                 orderBy: { number: "asc" },
-                include: { courses: true, freestyle: true },
-              },
-            },
-          },
-        },
-      },
-    },
+                take: 3 // Show first 3 lessons
+              }
+            }
+          }
+        }
+      }
+    }
   })
 
-  if (!path) {
-    return (
-      <section className="space-y-4">
-        <h1 className="section-title">Path not found</h1>
-        <p className="subtle">
-          This path doesn't exist. Go back to <Link href="/paths" className="underline" style={{ color: 'var(--text-primary)' }}>Learning Paths</Link>.
-        </p>
-      </section>
-    )
-  }
-
-  const langs = path.languages.map(pl => pl.language)
+  if (!path) notFound()
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-8">
+      {/* Header */}
       <header className="card p-6">
-        <div className="flex items-center gap-4 mb-4">
-          <Link href="/paths" className="btn btn-ghost text-sm">
-            ← Back to Paths
-          </Link>
-        </div>
-        <h1 className="section-title">{path.title}</h1>
-        <p className="subtle">{path.description}</p>
+        <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+          {path.title}
+        </h1>
+        <p className="text-lg" style={{ color: 'var(--text-muted)' }}>
+          {path.description}
+        </p>
       </header>
 
       {/* Languages in this path */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        {langs.map((lang) => (
-          <div key={lang.id} className="card p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
+      <div className="space-y-6">
+        <h2 className="text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>
+          Languages in this Path
+        </h2>
+        
+        <div className="grid gap-6">
+          {path.languages.map((pl) => (
+            <div key={pl.language.id} className="card p-6">
+              <div className="flex items-start gap-4">
                 <Image
-                  src={`/icons/${lang.slug}.svg`}
-                  alt={lang.name}
-                  width={32}
-                  height={32}
-                  className="w-8 h-8"
+                  src={`/icons/${pl.language.slug}.svg`}
+                  alt={pl.language.name}
+                  width={48}
+                  height={48}
+                  className="w-12 h-12"
                 />
-                <h2 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>
-                  {lang.name}
-                </h2>
-              </div>
-              <Link href={`/languages/${lang.slug}`} className="btn btn-primary text-sm">
-                Open language →
-              </Link>
-            </div>
-
-            <div className="space-y-4">
-              {lang.levels.map((lvl) => (
-                <div key={lvl.id} className="space-y-2">
-                  <div className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>
-                    Level {lvl.number}
+                
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>
+                      {pl.language.name}
+                    </h3>
+                    <Link 
+                      href={`/languages/${pl.language.slug}`}
+                      className="btn btn-primary"
+                    >
+                      Start Learning
+                    </Link>
                   </div>
-                  <div className="space-y-1">
-                    {lvl.courses.map((c) => (
-                      <div key={c.id} className="flex items-center justify-between p-2 rounded border" style={{
+
+                  <div className="space-y-3">
+                    {pl.language.lessons.map((lesson) => (
+                      <div key={lesson.id} className="flex items-center justify-between p-3 rounded border" style={{
                         borderColor: 'var(--card-border)',
                         backgroundColor: 'var(--card-bg)'
                       }}>
-                        <Link 
-                          href={`/courses/${c.id}`} 
-                          className="text-sm hover:underline"
-                          style={{ color: 'var(--text-primary)' }}
-                        >
-                          {c.title}
-                        </Link>
+                        <div className="flex items-center gap-3">
+                          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-brand-500 text-white text-xs font-bold">
+                            {lesson.number}
+                          </span>
+                          <div>
+                            <Link 
+                              href={`/lessons/${lesson.id}`} 
+                              className="text-sm font-medium hover:underline"
+                              style={{ color: 'var(--text-primary)' }}
+                            >
+                              {lesson.title}
+                            </Link>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className={`text-xs px-1.5 py-0.5 rounded ${
+                                lesson.difficulty === 'beginner' ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' :
+                                lesson.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400' :
+                                'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400'
+                              }`}>
+                                {lesson.difficulty}
+                              </span>
+                              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                                ⏱️ {lesson.estimatedTime} min
+                              </span>
+                            </div>
+                          </div>
+                        </div>
                         <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                          Course
+                          Lesson
                         </span>
                       </div>
                     ))}
-                    {lvl.freestyle && (
-                      <div className="flex items-center justify-between p-2 rounded border" style={{
-                        borderColor: 'var(--card-border)',
-                        backgroundColor: 'var(--card-bg)'
-                      }}>
-                        <Link 
-                          className="text-sm hover:underline"
-                          href={`/levels/${lvl.id}/freestyle`}
-                          style={{ color: 'var(--text-primary)' }}
-                        >
-                          Freestyle Project
-                        </Link>
-                        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                          Project
+                    
+                    {pl.language.lessons.length > 3 && (
+                      <div className="text-center py-2">
+                        <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                          +{pl.language.lessons.length - 3} more lessons
                         </span>
                       </div>
                     )}
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+      </div>
+
+      {/* CTA */}
+      <div className="text-center">
+        <Link href="/languages" className="btn btn-primary">
+          Browse All Languages
+        </Link>
       </div>
     </section>
   )

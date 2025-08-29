@@ -7,22 +7,21 @@ async function getLanguages() {
   return prisma.language.findMany({
     orderBy: { name: "asc" },
     include: {
-      levels: {
+      lessons: {
         orderBy: { number: "asc" },
-        include: { courses: true, freestyle: true },
       },
     },
   })
 }
 
-async function getCompletedCourseIdsForDevUser() {
+async function getCompletedLessonIdsForDevUser() {
   // For now we count progress for the "dev" user (userId = null).
   // Later we can switch this to an authenticated user id from session.
   const rows = await prisma.progress.findMany({
-    where: { userId: null, completed: true, courseId: { not: null } },
-    select: { courseId: true },
+    where: { userId: null, completed: true, lessonId: { not: null } },
+    select: { lessonId: true },
   })
-  return new Set(rows.map((r) => r.courseId!))
+  return new Set(rows.map((r) => r.lessonId!))
 }
 
 // --- page ------------------------------------------------------------------
@@ -30,7 +29,7 @@ async function getCompletedCourseIdsForDevUser() {
 export default async function LanguagesPage() {
   const [languages, doneIds] = await Promise.all([
     getLanguages(),
-    getCompletedCourseIdsForDevUser(),
+    getCompletedLessonIdsForDevUser(),
   ])
 
   return (

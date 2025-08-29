@@ -3,41 +3,76 @@ import { prisma } from "@/lib/prisma"
 
 export async function POST(request: Request) {
   try {
-    const { kind, id } = await request.json() as { kind: "course"|"exam"|"freestyle"; id: string }
-    if (!kind || !id) return NextResponse.json({ error: "kind and id are required" }, { status: 400 })
+    const { type, id } = await request.json()
 
-    let progress
-    if (kind === "course") {
-      const existing = await prisma.progress.findFirst({ where: { courseId: id, userId: null } })
-      progress = existing
-        ? await prisma.progress.update({ where: { id: existing.id }, data: { completed: true } })
-        : await prisma.progress.create({ data: { courseId: id, userId: null, completed: true } })
-    } else if (kind === "exam") {
-      const existing = await prisma.progress.findFirst({ where: { examId: id, userId: null } })
-      progress = existing
-        ? await prisma.progress.update({ where: { id: existing.id }, data: { completed: true } })
-        : await prisma.progress.create({ data: { examId: id, userId: null, completed: true } })
-      // award a trophy
-      await prisma.trophy.create({ data: { userId: (await getOrCreateDevUserId()), title: "Exam Conqueror", description: "Completed an exam project" } })
-    } else {
-      const existing = await prisma.progress.findFirst({ where: { freestyleId: id, userId: null } })
-      progress = existing
-        ? await prisma.progress.update({ where: { id: existing.id }, data: { completed: true } })
-        : await prisma.progress.create({ data: { freestyleId: id, userId: null, completed: true } })
-      await prisma.trophy.create({ data: { userId: (await getOrCreateDevUserId()), title: "Freestyler", description: "Completed a freestyle project" } })
+    // For now, we use userId = null for dev
+    const userId = null
+
+    if (type === "lesson") {
+      // Upsert progress for lesson
+      await prisma.progress.upsert({
+        where: {
+          userId_lessonId: {
+            userId,
+            lessonId: id,
+          },
+        },
+        update: {
+          completed: true,
+          updatedAt: new Date(),
+        },
+        create: {
+          userId,
+          lessonId: id,
+          completed: true,
+        },
+      })
+
+      return NextResponse.json({ success: true })
     }
 
-    return NextResponse.json({ ok: true, progress })
-  } catch (e) {
-    console.error(e)
-    return NextResponse.json({ error: "Unexpected error" }, { status: 500 })
-  }
-}
+    if (type === "exam") {
+      // Upsert progress for exam
+      await prisma.progress.upsert({
+        where: {
+          userId_examId: {
+            userId,
+            examId: id,
+          },
+        },
+        update: {
+          completed: true,
+          updatedAt: new Date(),
+        },
+        create: {
+          userId,
+          examId: id,
+          completed: true,
+        },
+      })
 
-async function getOrCreateDevUserId(): Promise<string> {
-  // associate trophies with a dev user (first user or a placeholder)
-  const one = await prisma.user.findFirst()
-  if (one) return one.id
-  const u = await prisma.user.create({ data: { email: "dev@example.com", name: "dev" } })
-  return u.id
+      // Award trophy for completing exam
+      const exam = await prisma.exam.findUnique({
+        where: { id },
+        include: { lesson: { include: { language: true } } }
+      })
+
+      if (exam) {
+        await prisma.trophy.create({
+          data: {
+            userId,
+            title: `${exam.lesson.language.name} Expert`,
+            description: `Completed exam for ${exam.lesson.language.name} Lesson ${exam.lesson.number}`,
+          },
+        })
+      }
+
+      return NextResponse.json({ success: true })
+    }
+
+    return NextResponse.json({ error: "Invalid type" }, { status: 400 })
+  } catch (error) {
+    console.error("Progress API error:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
 }
