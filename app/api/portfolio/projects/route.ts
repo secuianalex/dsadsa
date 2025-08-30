@@ -1,14 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 // GET: Fetch user's projects
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession()
+    const session = await getServerSession(authOptions)
     
-    if (!session?.user?.id) {
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const userId = (session as any).user?.id || (session as any).id
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID not found' }, { status: 401 })
     }
 
     const { searchParams } = new URL(request.url)
@@ -16,7 +22,7 @@ export async function GET(request: NextRequest) {
     
     const projects = await prisma.project.findMany({
       where: {
-        userId: session.user.id,
+        userId: userId,
         ...(isPublic ? { isPublic: true } : {})
       },
       orderBy: { updatedAt: 'desc' }
@@ -32,10 +38,15 @@ export async function GET(request: NextRequest) {
 // POST: Create a new project
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession()
+    const session = await getServerSession(authOptions)
     
-    if (!session?.user?.id) {
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const userId = (session as any).user?.id || (session as any).id
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID not found' }, { status: 401 })
     }
 
     const { title, description, technologies, githubUrl, liveUrl, imageUrl, isPublic } = await request.json()
@@ -46,7 +57,7 @@ export async function POST(request: NextRequest) {
 
     const project = await prisma.project.create({
       data: {
-        userId: session.user.id,
+        userId: userId,
         title,
         description,
         technologies: JSON.stringify(technologies),

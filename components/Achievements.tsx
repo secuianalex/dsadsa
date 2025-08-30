@@ -27,7 +27,7 @@ interface UserProgress {
 }
 
 export default function Achievements({ isVisible, onClose }: AchievementsProps) {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [userProgress, setUserProgress] = useState<UserProgress>({
     lessonsCompleted: 0,
     streakDays: 0,
@@ -42,11 +42,11 @@ export default function Achievements({ isVisible, onClose }: AchievementsProps) 
   const [newAchievements, setNewAchievements] = useState<any[]>([])
 
   useEffect(() => {
-    if (!isVisible || !session?.user?.id) return
+    if (!isVisible || status === 'loading' || !session?.user?.email) return
 
     // Load user progress (this would come from API in real app)
     loadUserProgress()
-  }, [isVisible, session?.user?.id])
+  }, [isVisible, status, session?.user?.email])
 
   const loadUserProgress = async () => {
     try {

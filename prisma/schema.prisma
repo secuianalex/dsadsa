@@ -73,11 +73,12 @@ model User {
 }
 
 model Language {
-  id       String         @id @default(cuid())
-  slug     String         @unique
-  name     String
-  lessons  Lesson[]
-  paths    PathLanguage[]
+  id          String         @id @default(cuid())
+  slug        String         @unique
+  name        String
+  description String?        // Optional description for the language
+  lessons     Lesson[]
+  paths       PathLanguage[]
 }
 
 model Lesson {
@@ -156,6 +157,7 @@ model PathLanguage {
   id         String   @id @default(cuid())
   pathId     String
   languageId String
+  order      Int      @default(0) // Order of languages in the learning path
   path       Path     @relation(fields: [pathId], references: [id], onDelete: Cascade)
   language   Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
 

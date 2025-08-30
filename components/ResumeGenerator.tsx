@@ -23,7 +23,7 @@ interface ResumeData {
 }
 
 export default function ResumeGenerator() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [resumeData, setResumeData] = useState<ResumeData | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [previewHtml, setPreviewHtml] = useState('')
@@ -84,7 +84,18 @@ export default function ResumeGenerator() {
     }
   }
 
-  if (!session?.user?.id) {
+  if (status === 'loading') {
+    return (
+      <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-lg max-w-4xl mx-auto">
+        <div className="p-4 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!session?.user?.email) {
     return (
       <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-lg max-w-4xl mx-auto">
         <div className="p-8 text-center">

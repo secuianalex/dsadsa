@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 interface ResumeData {
@@ -54,17 +55,22 @@ interface ResumeData {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession()
+    const session = await getServerSession(authOptions)
     
-    if (!session?.user?.id) {
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const userId = (session as any).user?.id || (session as any).id
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID not found' }, { status: 401 })
     }
 
     const { template = 'modern', includeProjects = true, includeCertifications = true } = await request.json()
 
     // Fetch user data
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: userId },
       include: {
         progress: {
           include: {
@@ -89,11 +95,11 @@ export async function POST(request: NextRequest) {
       personalInfo: {
         name: user.name || 'Your Name',
         email: user.email || '',
-        location: user.location,
-        website: user.website,
-        github: user.github,
-        linkedin: user.linkedin,
-        bio: user.bio
+        location: user.location || '',
+        website: user.website || '',
+        github: user.github || '',
+        linkedin: user.linkedin || '',
+        bio: user.bio || ''
       },
       education: [
         {
@@ -137,8 +143,8 @@ export async function POST(request: NextRequest) {
           title: project.title,
           description: project.description,
           technologies: JSON.parse(project.technologies || '[]'),
-          githubUrl: project.githubUrl,
-          liveUrl: project.liveUrl
+          githubUrl: project.githubUrl || undefined,
+          liveUrl: project.liveUrl || undefined
         }))
         .slice(0, 5) // Limit to top 5 projects
     }

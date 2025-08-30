@@ -35,7 +35,7 @@ interface UserProfile {
 }
 
 export default function PortfolioBuilder() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [projects, setProjects] = useState<Project[]>([])
   const [skills, setSkills] = useState<Skill[]>([])
   const [profile, setProfile] = useState<UserProfile>({})
@@ -63,10 +63,14 @@ export default function PortfolioBuilder() {
   })
 
   useEffect(() => {
-    if (session?.user?.id) {
+    if (status === 'loading') return
+    
+    if (session?.user?.email) {
       loadPortfolioData()
+    } else {
+      setIsLoading(false)
     }
-  }, [session])
+  }, [session, status])
 
   const loadPortfolioData = async () => {
     try {
@@ -161,7 +165,18 @@ export default function PortfolioBuilder() {
     return levels[level - 1] || 'Intermediate'
   }
 
-  if (!session?.user?.id) {
+  if (status === 'loading') {
+    return (
+      <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-lg max-w-4xl mx-auto">
+        <div className="p-8 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!session?.user) {
     return (
       <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-lg max-w-4xl mx-auto">
         <div className="p-8 text-center">

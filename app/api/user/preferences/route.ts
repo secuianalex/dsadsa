@@ -1,20 +1,26 @@
 import { NextRequest, NextResponse } from "next/server"
 import { PrismaClient } from "@prisma/client"
 import { getServerSession } from "next-auth"
+import { authOptions } from '@/lib/auth'
 
 const prisma = new PrismaClient()
 
 // GET: Retrieve user preferences
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession()
+    const session = await getServerSession(authOptions)
 
-    if (!session?.user?.id) {
+    if (!session?.user) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 })
     }
 
+    const userId = (session as any).user?.id || (session as any).id
+    if (!userId) {
+      return NextResponse.json({ error: "User ID not found" }, { status: 401 })
+    }
+
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: userId },
       include: { userPreferences: true }
     })
 
@@ -45,10 +51,15 @@ export async function GET(request: NextRequest) {
 // PUT: Update user preferences
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession()
+    const session = await getServerSession(authOptions)
 
-    if (!session?.user?.id) {
+    if (!session?.user) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 })
+    }
+
+    const userId = (session as any).user?.id || (session as any).id
+    if (!userId) {
+      return NextResponse.json({ error: "User ID not found" }, { status: 401 })
     }
 
     const body = await request.json()
@@ -64,7 +75,7 @@ export async function PUT(request: NextRequest) {
 
     // Update user preferences
     const updatedUser = await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: userId },
       data: {
         ...(favoriteLanguages && { favoriteLanguages: JSON.stringify(favoriteLanguages) }),
         ...(theme && { theme }),
@@ -79,10 +90,10 @@ export async function PUT(request: NextRequest) {
     // Update detailed preferences if provided
     if (preferences) {
       await prisma.userPreferences.upsert({
-        where: { userId: session.user.id },
+        where: { userId: userId },
         update: preferences,
         create: {
-          userId: session.user.id,
+          userId: userId,
           ...preferences
         }
       })

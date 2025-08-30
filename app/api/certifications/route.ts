@@ -1,18 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 // GET: Fetch user's certificates
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession()
+    const session = await getServerSession(authOptions)
     
-    if (!session?.user?.id) {
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Get user ID from session or token
+    const userId = (session as any).user?.id || (session as any).id
+
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID not found' }, { status: 401 })
+    }
+
     const certificates = await prisma.certification.findMany({
-      where: { userId: session.user.id },
+      where: { userId: userId },
       orderBy: { issuedAt: 'desc' }
     })
 
@@ -26,10 +34,17 @@ export async function GET(request: NextRequest) {
 // POST: Check eligibility for new certificate
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession()
+    const session = await getServerSession(authOptions)
     
-    if (!session?.user?.id) {
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Get user ID from session or token
+    const userId = (session as any).user?.id || (session as any).id
+
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID not found' }, { status: 401 })
     }
 
     const { languageSlug } = await request.json()
@@ -37,7 +52,7 @@ export async function POST(request: NextRequest) {
     // Check if user already has a certificate for this language
     const existingCertificate = await prisma.certification.findFirst({
       where: {
-        userId: session.user.id,
+        userId: userId,
         language: languageSlug
       }
     })
@@ -61,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     const completedLessons = await prisma.progress.count({
       where: {
-        userId: session.user.id,
+        userId: userId,
         lesson: {
           language: {
             slug: languageSlug

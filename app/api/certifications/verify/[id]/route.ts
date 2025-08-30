@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const certificateId = params.id
+    const { id: certificateId } = await params
 
     // Find certificate by ID
     const certificate = await prisma.certification.findFirst({

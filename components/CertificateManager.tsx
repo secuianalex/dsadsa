@@ -22,7 +22,7 @@ interface Language {
 }
 
 export default function CertificateManager() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [certificates, setCertificates] = useState<Certificate[]>([])
   const [languages, setLanguages] = useState<Language[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -33,10 +33,14 @@ export default function CertificateManager() {
   const [previewHtml, setPreviewHtml] = useState('')
 
   useEffect(() => {
-    if (session?.user?.id) {
+    if (status === 'loading') return
+    
+    if (session?.user?.email) {
       loadData()
+    } else {
+      setIsLoading(false)
     }
-  }, [session])
+  }, [session, status])
 
   const loadData = async () => {
     try {
@@ -108,16 +112,18 @@ export default function CertificateManager() {
     }
   }
 
-  const downloadCertificate = (certificate: Certificate) => {
-    if (!certificate.certificateUrl) return
+            const viewCertificate = (certificate: Certificate) => {
+            window.open(`/api/certificates/${certificate.id}`, '_blank')
+          }
 
-    const link = document.createElement('a')
-    link.href = certificate.certificateUrl
-    link.download = `${certificate.title}-Certificate.html`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
+          const downloadCertificate = (certificate: Certificate) => {
+            const link = document.createElement('a')
+            link.href = `/api/certificates/${certificate.id}`
+            link.download = `${certificate.title}-Certificate.html`
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+          }
 
   const printCertificate = () => {
     if (!previewHtml) return
@@ -148,7 +154,18 @@ export default function CertificateManager() {
     return icons[slug.toLowerCase()] || '💻'
   }
 
-  if (!session?.user?.id) {
+  if (status === 'loading') {
+    return (
+      <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-lg max-w-4xl mx-auto">
+        <div className="p-8 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!session?.user?.email) {
     return (
       <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-lg max-w-4xl mx-auto">
         <div className="p-8 text-center">
@@ -200,12 +217,20 @@ export default function CertificateManager() {
                             <span>✅</span>
                             <span className="text-sm font-medium">Certificate Earned</span>
                           </div>
-                          <button
-                            onClick={() => downloadCertificate(existingCert)}
-                            className="w-full px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-sm"
-                          >
-                            📥 Download Certificate
-                          </button>
+                                                        <div className="flex gap-2">
+                                <button
+                                  onClick={() => viewCertificate(existingCert)}
+                                  className="flex-1 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm"
+                                >
+                                  👁️ View
+                                </button>
+                                <button
+                                  onClick={() => downloadCertificate(existingCert)}
+                                  className="flex-1 px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-sm"
+                                >
+                                  📥 Download
+                                </button>
+                              </div>
                         </div>
                       ) : (
                         <button
@@ -290,12 +315,20 @@ export default function CertificateManager() {
                         <span className="text-green-600">✅</span>
                         <span className="text-sm text-gray-600">Verified Certificate</span>
                       </div>
-                      <button
-                        onClick={() => downloadCertificate(certificate)}
-                        className="w-full px-3 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors text-sm"
-                      >
-                        📥 Download Certificate
-                      </button>
+                                                    <div className="flex gap-2">
+                                <button
+                                  onClick={() => viewCertificate(certificate)}
+                                  className="flex-1 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm"
+                                >
+                                  👁️ View
+                                </button>
+                                <button
+                                  onClick={() => downloadCertificate(certificate)}
+                                  className="flex-1 px-3 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors text-sm"
+                                >
+                                  📥 Download
+                                </button>
+                              </div>
                     </div>
                   ))}
                 </div>

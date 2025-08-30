@@ -17,21 +17,21 @@ interface AutoSaveState {
 }
 
 export function useAutoSave({ lessonId, language, delay = 2000, enabled = true }: AutoSaveOptions) {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [state, setState] = useState<AutoSaveState>({
     isSaving: false,
     lastSaved: null,
     hasUnsavedChanges: false
   })
   
-  const timeoutRef = useRef<NodeJS.Timeout>()
+  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
   const lastCodeRef = useRef<string>('')
 
   // Generate localStorage key
   const getStorageKey = useCallback(() => {
-    if (!session?.user?.id) return null
-    return `autosave_${session.user.id}_${lessonId}`
-  }, [session?.user?.id, lessonId])
+    if (!session?.user?.email) return null
+    return `autosave_${session.user.email}_${lessonId}`
+  }, [session?.user?.email, lessonId])
 
   // Save to localStorage
   const saveToLocalStorage = useCallback((code: string) => {
@@ -81,7 +81,7 @@ export function useAutoSave({ lessonId, language, delay = 2000, enabled = true }
 
   // Auto-save function
   const autoSave = useCallback(async (code: string) => {
-    if (!enabled || !session?.user?.id || code === lastCodeRef.current) {
+    if (!enabled || status === 'loading' || !session?.user?.email || code === lastCodeRef.current) {
       return
     }
 
@@ -113,7 +113,7 @@ export function useAutoSave({ lessonId, language, delay = 2000, enabled = true }
       console.error('Auto-save failed:', error)
       setState(prev => ({ ...prev, isSaving: false }))
     }
-  }, [enabled, session?.user?.id, lessonId, language, saveToLocalStorage])
+  }, [enabled, session?.user, lessonId, language, saveToLocalStorage])
 
   // Debounced auto-save
   const debouncedAutoSave = useCallback((code: string) => {
@@ -130,7 +130,9 @@ export function useAutoSave({ lessonId, language, delay = 2000, enabled = true }
 
   // Load saved content on mount
   useEffect(() => {
-    if (session?.user?.id) {
+    if (status === 'loading') return
+    
+    if (session?.user) {
       const savedCode = loadFromLocalStorage()
       if (savedCode) {
         lastCodeRef.current = savedCode
@@ -141,7 +143,7 @@ export function useAutoSave({ lessonId, language, delay = 2000, enabled = true }
         }))
       }
     }
-  }, [session?.user?.id, loadFromLocalStorage])
+  }, [session?.user, status, loadFromLocalStorage])
 
   // Cleanup timeout on unmount
   useEffect(() => {

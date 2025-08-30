@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
+import { authOptions } from '@/lib/auth'
 import { generateSmartHints, getLearningPathSuggestions, getPersonalizedRecommendations } from "@/lib/smartHints"
 
 // GET: Retrieve smart hints for a lesson
@@ -57,7 +58,7 @@ export async function GET(request: NextRequest) {
 // POST: Track hint interactions (dismiss, apply, etc.)
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession()
+    const session = await getServerSession(authOptions)
     const { lessonId, hintId, action, code } = await request.json()
 
     if (!lessonId || !hintId || !action) {
@@ -80,7 +81,7 @@ export async function POST(request: NextRequest) {
       not_helpful: "Hint marked as not helpful"
     }
 
-    console.log(`User ${session?.user?.id || 'anonymous'} ${actions[action as keyof typeof actions]} for hint ${hintId} in lesson ${lessonId}`)
+    console.log(`User ${(session as any)?.user?.id || 'anonymous'} ${actions[action as keyof typeof actions]} for hint ${hintId} in lesson ${lessonId}`)
 
     return NextResponse.json({
       success: true,

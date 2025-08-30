@@ -20,5 +20,11 @@ export default async function LanguagePage({ params }: { params: Promise<{ slug:
     notFound()
   }
 
-  return <LanguagePageClient language={language} />
+  // Add description field if it doesn't exist in the database
+  const languageWithDescription = {
+    ...language,
+    description: language.description || `Learn ${language.name} programming with our comprehensive course.`
+  }
+
+  return <LanguagePageClient language={languageWithDescription} />
 }

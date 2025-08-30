@@ -2779,14 +2779,16 @@ Ready to take your ${name} skills to the next level!
       }
     })
 
-    // Connect languages to this path
-    for (const langSlug of pathData.languageSlugs) {
+    // Connect languages to this path with order
+    for (let i = 0; i < pathData.languageSlugs.length; i++) {
+      const langSlug = pathData.languageSlugs[i]
       const lang = await prisma.language.findUnique({ where: { slug: langSlug } })
       if (lang) {
         await prisma.pathLanguage.create({
           data: {
             pathId: path.id,
-            languageId: lang.id
+            languageId: lang.id,
+            order: i
           }
         })
       }

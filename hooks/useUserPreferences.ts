@@ -47,7 +47,9 @@ export function useUserPreferences(): UseUserPreferencesReturn {
 
   // Load user preferences
   const loadPreferences = useCallback(async () => {
-    if (!session?.user?.id) {
+    if (status === 'loading') return
+    
+    if (!session?.user) {
       setPreferences(null)
       setLoading(false)
       return
@@ -69,11 +71,11 @@ export function useUserPreferences(): UseUserPreferencesReturn {
     } finally {
       setLoading(false)
     }
-  }, [session?.user?.id])
+  }, [session?.user])
 
   // Update preferences
   const updatePreferences = useCallback(async (updates: Partial<UserPreferences>) => {
-    if (!session?.user?.id) return
+    if (status === 'loading' || !session?.user) return
 
     try {
       setError(null)
@@ -94,7 +96,7 @@ export function useUserPreferences(): UseUserPreferencesReturn {
       setError(err instanceof Error ? err.message : 'Failed to update preferences')
       throw err
     }
-  }, [session?.user?.id])
+  }, [session?.user])
 
   // Add favorite language
   const addFavoriteLanguage = useCallback(async (languageSlug: string) => {

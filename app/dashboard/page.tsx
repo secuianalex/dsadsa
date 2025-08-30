@@ -47,7 +47,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (status === 'loading') return
 
-    if (!session?.user?.id) {
+    if (!session?.user?.email) {
       router.push('/auth/signin')
       return
     }
@@ -126,7 +126,7 @@ export default function Dashboard() {
     )
   }
 
-  if (!session?.user?.id) {
+  if (!session?.user) {
     return null
   }
 

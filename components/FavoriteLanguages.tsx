@@ -19,7 +19,7 @@ interface FavoriteLanguagesProps {
 }
 
 export default function FavoriteLanguages({ languages, isVisible, onClose }: FavoriteLanguagesProps) {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const { preferences, addFavoriteLanguage, removeFavoriteLanguage } = useUserPreferences()
   const [favoriteLanguages, setFavoriteLanguages] = useState<string[]>([])
   const [isEditing, setIsEditing] = useState(false)
@@ -31,7 +31,9 @@ export default function FavoriteLanguages({ languages, isVisible, onClose }: Fav
   }, [preferences?.favoriteLanguages])
 
   const handleToggleFavorite = async (languageSlug: string) => {
-    if (!session?.user?.id) {
+    if (status === 'loading') return
+    
+    if (!session?.user?.email) {
       alert('Please sign in to manage favorite languages')
       return
     }
@@ -111,7 +113,12 @@ export default function FavoriteLanguages({ languages, isVisible, onClose }: Fav
 
       {/* Content */}
       <div className="p-4">
-        {!session?.user?.id ? (
+        {status === 'loading' ? (
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        ) : !session?.user ? (
           <div className="text-center py-8">
             <div className="text-gray-400 mb-2">🔒</div>
             <p className="text-gray-600 mb-4">Sign in to manage your favorite languages</p>

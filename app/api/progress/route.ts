@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json({
         completed: progress?.completed || false,
-        completedAt: progress?.completedAt || null
+        completedAt: progress?.updatedAt || null
       })
     } else {
       // Get all progress for user
@@ -74,8 +74,7 @@ export async function POST(request: NextRequest) {
       progress = await prisma.progress.update({
         where: { id: progress.id },
         data: {
-          completed: true,
-          completedAt: new Date()
+          completed: true
         }
       })
     } else {
@@ -84,8 +83,7 @@ export async function POST(request: NextRequest) {
         data: {
           lessonId,
           userId,
-          completed: true,
-          completedAt: new Date()
+          completed: true
         }
       })
     }
@@ -100,7 +98,7 @@ export async function POST(request: NextRequest) {
       success: true,
       progress: {
         completed: progress.completed,
-        completedAt: progress.completedAt
+        completedAt: progress.updatedAt
       }
     })
   } catch (error) {
