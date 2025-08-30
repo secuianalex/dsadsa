@@ -1,0 +1,69 @@
+{
+  "nav": {
+    "languages": "Limbaje",
+    "learningPaths": "Căi de Învățare"
+  },
+  "home": {
+    "hero": {
+      "title": "Învață programarea prin construirea de proiecte reale",
+      "subtitle": "Stăpânește peste 80 de limbaje și tehnologii prin lecții progresive, deblochează realizări, completează proiecte și câștigă trofee în timp ce înveți. Obține planuri de învățare personalizate de la asistentul nostru AI.",
+      "browseLanguages": "Explorează Limbajele",
+      "explorePaths": "Explorează Căile de Învățare"
+    },
+    "features": {
+      "title": "De ce să alegi LearnMe?",
+      "progressiveLessons": {
+        "title": "Lecții Progresive",
+        "description": "Învață pas cu pas cu lecții atent concepute care îți construiesc abilitățile de la începător la avansat."
+      },
+      "projectBased": {
+        "title": "Învățare Bazată pe Proiecte",
+        "description": "Învață prin construirea de proiecte reale, completarea de provocări și câștigarea de trofee pentru realizările tale."
+      },
+      "technologies": {
+        "title": "80+ Tehnologii",
+        "description": "De la dezvoltarea web la AI, aplicații mobile la dezvoltarea de jocuri - acoperim totul cu lecții comprehensive."
+      }
+    },
+    "popularPaths": {
+      "title": "Căi de Învățare Populare",
+      "viewAll": "Vezi Toate Căile de Învățare"
+    }
+  },
+  "languages": {
+    "title": "Limbaje de Programare",
+    "subtitle": "Explorează limbajele de programare și tehnologiile cu lecții comprehensive de la începător la avansat.",
+    "searchPlaceholder": "Caută limbaje...",
+    "allDifficulties": "Toate Dificultățile",
+    "beginner": "Începător",
+    "intermediate": "Intermediar",
+    "advanced": "Avansat",
+    "lessons": "lecții",
+    "progress": "Progres",
+    "moreLessons": "mai multe lecții",
+    "noResults": "Nu s-au găsit limbaje care să corespundă căutării tale.",
+    "noResultsSubtitle": "Încearcă să ajustezi termenii de căutare sau filtrele."
+  },
+  "paths": {
+    "title": "Căi de Învățare",
+    "subtitle": "Căi de învățare structurate pentru a-ți ghida călătoria de programare de la începător la expert",
+    "technologies": "Tehnologii:",
+    "difficulty": "Dificultate:",
+    "duration": "Durată:"
+  },
+  "footer": {
+    "copyright": "© 2025 LearnMe",
+    "builtWith": "Construit cu Next.js & Prisma •",
+    "browseCourses": "Explorează cursurile"
+  },
+  "aiChat": {
+    "placeholder": "Spune-mi ce vrei să înveți sau să construiești...",
+    "send": "Trimite"
+  },
+  "stats": {
+    "languages": "Limbaje",
+    "lessons": "Lecții",
+    "projectsTotal": "Proiecte totale",
+    "projectsToday": "Proiecte astăzi"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "nav": {
+    "languages": "Languages",
+    "learningPaths": "Learning Paths"
+  },
+  "home": {
+    "hero": {
+      "title": "Learn programming by building real projects",
+      "subtitle": "Master 80+ languages and technologies through progressive lessons, unlock achievements, complete projects, and earn trophies while you learn. Get personalized learning plans from our AI assistant.",
+      "browseLanguages": "Browse Languages",
+      "explorePaths": "Explore Learning Paths"
+    },
+    "features": {
+      "title": "Why Choose LearnMe?",
+      "progressiveLessons": {
+        "title": "Progressive Lessons",
+        "description": "Learn step-by-step with carefully crafted lessons that build your skills from beginner to advanced."
+      },
+      "projectBased": {
+        "title": "Project-Based Learning",
+        "description": "Learn by building real projects, completing challenges, and earning trophies for your achievements."
+      },
+      "technologies": {
+        "title": "80+ Technologies",
+        "description": "From web development to AI, mobile apps to game development - we cover it all with comprehensive lessons."
+      }
+    },
+    "popularPaths": {
+      "title": "Popular Learning Paths",
+      "viewAll": "View All Learning Paths"
+    }
+  },
+  "languages": {
+    "title": "Programming Languages",
+    "subtitle": "Explore programming languages and technologies with comprehensive lessons from beginner to advanced.",
+    "searchPlaceholder": "Search languages...",
+    "allDifficulties": "All Difficulties",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "lessons": "lessons",
+    "progress": "Progress",
+    "moreLessons": "more lessons",
+    "noResults": "No languages found matching your search.",
+    "noResultsSubtitle": "Try adjusting your search terms or filters."
+  },
+  "paths": {
+    "title": "Learning Paths",
+    "subtitle": "Structured learning paths to guide your programming journey from beginner to expert",
+    "technologies": "Technologies:",
+    "difficulty": "Difficulty:",
+    "duration": "Duration:"
+  },
+  "footer": {
+    "copyright": "© 2025 LearnMe",
+    "builtWith": "Built with Next.js & Prisma •",
+    "browseCourses": "Browse courses"
+  },
+  "aiChat": {
+    "placeholder": "Tell me what you want to learn or build...",
+    "send": "Send"
+  },
+  "stats": {
+    "languages": "Languages",
+    "lessons": "Lessons",
+    "projectsTotal": "Projects total",
+    "projectsToday": "Projects today"
+  }
+}

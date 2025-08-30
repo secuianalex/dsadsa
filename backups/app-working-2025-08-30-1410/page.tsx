@@ -1,15 +1,9 @@
-"use client"
-
 import Image from "next/image"
 import Link from "next/link"
 import StatsBar from "@/components/Stats"
 import AIChat from "@/components/AIChat"
-import { useLocale } from "@/components/LocaleProvider"
-import { t } from "@/lib/translations"
 
 export default function HomePage() {
-  const { locale } = useLocale()
-
   return (
     <div className="space-y-16">
       {/* Hero */}
@@ -22,17 +16,17 @@ export default function HomePage() {
           className="mx-auto"
         />
         <h1 className="text-3xl sm:text-5xl font-bold tracking-tight">
-          {t(locale, "home.hero.title")}
+          Learn programming by building real projects
         </h1>
         <p className="text-gray-400 max-w-2xl mx-auto">
-          {t(locale, "home.hero.subtitle")}
+          Master 80+ languages and technologies through progressive lessons, unlock achievements, complete projects, and earn trophies while you learn. Get personalized learning plans from our AI assistant.
         </p>
         <div className="flex justify-center gap-4 mt-6">
           <Link href="/languages" className="btn btn-primary">
-            {t(locale, "home.hero.browseLanguages")}
+            Browse Languages
           </Link>
           <Link href="/paths" className="btn btn-ghost">
-            {t(locale, "home.hero.explorePaths")}
+            Explore Learning Paths
           </Link>
         </div>
       </section>
@@ -47,30 +41,30 @@ export default function HomePage() {
 
       {/* Paths preview */}
       <section>
-        <h2 className="section-title mb-6">{t(locale, "home.popularPaths.title")}</h2>
+        <h2 className="section-title mb-6">Popular Learning Paths</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Paths will be loaded dynamically */}
         </div>
         <div className="text-center mt-8">
           <Link href="/paths" className="btn btn-primary">
-            {t(locale, "home.popularPaths.viewAll")}
+            View All Learning Paths
           </Link>
         </div>
       </section>
 
       {/* Features */}
       <section>
-        <h2 className="section-title mb-6 text-center">{t(locale, "home.features.title")}</h2>
+        <h2 className="section-title mb-6 text-center">Why Choose LearnMe?</h2>
         <div className="grid md:grid-cols-3 gap-6">
           <div className="card p-6 text-center">
             <div className="w-12 h-12 bg-brand-500 rounded-lg flex items-center justify-center mx-auto mb-4">
               <span className="text-white text-xl">📚</span>
             </div>
             <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
-              {t(locale, "home.features.progressiveLessons.title")}
+              Progressive Lessons
             </h3>
             <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-              {t(locale, "home.features.progressiveLessons.description")}
+              Learn step-by-step with carefully crafted lessons that build your skills from beginner to advanced.
             </p>
           </div>
           
@@ -79,10 +73,10 @@ export default function HomePage() {
               <span className="text-white text-xl">🏆</span>
             </div>
             <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
-              {t(locale, "home.features.projectBased.title")}
+              Project-Based Learning
             </h3>
             <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-              {t(locale, "home.features.projectBased.description")}
+              Learn by building real projects, completing challenges, and earning trophies for your achievements.
             </p>
           </div>
           
@@ -91,10 +85,10 @@ export default function HomePage() {
               <span className="text-white text-xl">🚀</span>
             </div>
             <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
-              {t(locale, "home.features.technologies.title")}
+              80+ Technologies
             </h3>
             <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-              {t(locale, "home.features.technologies.description")}
+              From web development to AI, mobile apps to game development - we cover it all with comprehensive lessons.
             </p>
           </div>
         </div>

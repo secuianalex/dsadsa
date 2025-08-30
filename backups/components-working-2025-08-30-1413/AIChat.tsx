@@ -2,8 +2,6 @@
 
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
-import { useLocale } from "@/components/LocaleProvider"
-import { t } from "@/lib/translations"
 
 interface Message {
   id: string
@@ -28,7 +26,6 @@ interface AIChatProps {
 }
 
 export default function AIChat({ paths }: AIChatProps) {
-  const { locale } = useLocale()
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -314,7 +311,7 @@ Tell me more specifically what you want to build or learn, and I'll create a det
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder={t(locale, "aiChat.placeholder")}
+          placeholder="Tell me what you want to learn or build..."
           className="input flex-1"
           disabled={isLoading}
         />
@@ -323,7 +320,7 @@ Tell me more specifically what you want to build or learn, and I'll create a det
           disabled={!inputValue.trim() || isLoading}
           className="btn btn-primary px-6"
         >
-          {isLoading ? 'Thinking...' : t(locale, "aiChat.send")}
+          {isLoading ? 'Thinking...' : 'Send'}
         </button>
       </form>
 

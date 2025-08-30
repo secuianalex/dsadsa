@@ -1,0 +1,20 @@
+<svg width="640" height="160" viewBox="0 0 640 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2B79FF"/>
+      <stop offset="1" stop-color="#1A4DA8"/>
+    </linearGradient>
+  </defs>
+  <!-- Mark -->
+  <g transform="translate(0,8)">
+    <rect rx="24" ry="24" x="0" y="0" width="96" height="96" fill="url(#g2)"/>
+    <path d="M20 16v64h44v-12H32V16z" fill="white" opacity="0.95"/>
+    <path d="M84 80V36l12 12 12-12v44h-12V58l-6 6-6-6v22z" fill="white" opacity="0.95"/>
+  </g>
+  <!-- Word -->
+  <g transform="translate(120,80)">
+    <text x="0" y="0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto" font-weight="800" font-size="56" fill="#0f172a">Learn</text>
+    <text x="240" y="0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto" font-weight="800" font-size="56" fill="#2B79FF">Me</text>
+    <text x="0" y="28" font-family="Inter, ui-sans-serif, system-ui" font-size="14" fill="#475569" opacity="0.9">Learn by doing • Projects • Trophies</text>
+  </g>
+</svg>

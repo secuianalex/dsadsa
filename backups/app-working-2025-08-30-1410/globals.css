@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Design tokens ===== */
+:root {
+  --background: #f8fafc;  /* light background */
+  --foreground: #0f172a;  /* dark text */
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --card-border: rgba(0, 0, 0, 0.1);
+  --text-muted: #64748b;
+  --text-primary: #0f172a;
+}
+
+.dark {
+  --background: #0b1220;  /* subtle dark navy background */
+  --foreground: #e5e7eb;  /* light text */
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text-muted: #94a3b8;
+  --text-primary: #e5e7eb;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Brand palette (used by btn-primary etc.) */
+  --color-brand-50:  #eef6ff;
+  --color-brand-100: #d9ebff;
+  --color-brand-200: #b7d6ff;
+  --color-brand-300: #8abcff;
+  --color-brand-400: #5a9bff;
+  --color-brand-500: #2b79ff;  /* primary */
+  --color-brand-600: #1f5ed1;
+  --color-brand-700: #1a4da8;
+  --color-brand-800: #173f88;
+  --color-brand-900: #132f65;
+
+  --font-sans: var(--font-inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* ===== Base ===== */
+html, body { height: 100%; }
+body {
+  background: radial-gradient(1200px 800px at 10% -10%, rgba(43,121,255,0.15), transparent 60%),
+              radial-gradient(1200px 800px at 90% -20%, rgba(26,77,168,0.18), transparent 60%),
+              var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* ===== Utilities ===== */
+.container { @apply w-full mx-auto px-4; }  /* add md/lg padding per page where needed */
+
+.card {
+  @apply rounded-2xl border backdrop-blur-sm shadow-[0_8px_40px_rgba(0,0,0,0.1)];
+  background: var(--card-bg);
+  border-color: var(--card-border);
+}
+.card-hover { @apply transition hover:shadow-[0_12px_50px_rgba(0,0,0,0.15)] hover:-translate-y-0.5; }
+
+.section-title { 
+  @apply text-2xl font-bold tracking-tight;
+  color: var(--text-primary);
+}
+.subtle { 
+  @apply text-sm;
+  color: var(--text-muted);
+}
+
+/* Buttons */
+.btn { @apply inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition; }
+.btn-primary { @apply bg-brand-500 text-white hover:bg-brand-600 border border-white/10; }
+.btn-ghost   { 
+  @apply hover:bg-white/10 border transition-colors;
+  color: var(--text-primary);
+  border-color: var(--card-border);
+}
+
+/* Badges */
+.badge { 
+  @apply inline-block rounded-md px-2 py-0.5 text-xs border;
+  background: var(--card-bg);
+  border-color: var(--card-border);
+  color: var(--text-primary);
+}
+
+/* Inputs */
+.input {
+  @apply w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500/60;
+  background: var(--card-bg);
+  border-color: var(--card-border);
+  color: var(--text-primary);
+}
+.input::placeholder {
+  color: var(--text-muted);
+}

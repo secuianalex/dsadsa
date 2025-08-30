@@ -1,8 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { useLocale } from "@/components/LocaleProvider"
-import { t } from "@/lib/translations"
 
 type Stats = {
   languages: number
@@ -14,7 +12,6 @@ type Stats = {
 export default function StatsBar() {
   const [stats, setStats] = React.useState<Stats | null>(null)
   const [loading, setLoading] = React.useState(true)
-  const { locale } = useLocale()
 
   React.useEffect(() => {
     let alive = true
@@ -51,10 +48,10 @@ export default function StatsBar() {
   }
 
   const items = [
-    { label: t(locale, "stats.languages"), value: stats.languages },
-    { label: t(locale, "stats.lessons"), value: stats.lessons },
-    { label: t(locale, "stats.projectsTotal"), value: stats.projectsTotal },
-    { label: t(locale, "stats.projectsToday"), value: stats.projectsToday },
+    { label: "Languages", value: stats.languages },
+    { label: "Lessons", value: stats.lessons },
+    { label: "Projects total", value: stats.projectsTotal },
+    { label: "Projects today", value: stats.projectsToday },
   ]
 
   return (
