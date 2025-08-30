@@ -5,6 +5,7 @@ import { useState } from "react"
 import { useLocale } from "@/components/LocaleProvider"
 import { t } from "@/lib/translations"
 import CodeEditor from "./CodeEditor"
+import CompletionCelebration from "./CompletionCelebration"
 
 interface TestResult {
   name: string
@@ -50,6 +51,7 @@ export default function LessonPageClient({ lesson }: LessonPageClientProps) {
   const [showHints, setShowHints] = useState(false)
   const [showSolution, setShowSolution] = useState(false)
   const [currentHintIndex, setCurrentHintIndex] = useState(0)
+  const [showCelebration, setShowCelebration] = useState(false)
 
   const handleCodeChange = (value: string | undefined) => {
     setCode(value || '')
@@ -88,8 +90,26 @@ export default function LessonPageClient({ lesson }: LessonPageClientProps) {
         
         // If all tests passed, mark lesson as completed
         if (result.passed) {
-          // TODO: Update lesson completion status in database
-          console.log('Lesson completed!')
+          try {
+            const progressResponse = await fetch('/api/progress', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                lessonId: lesson.id,
+                userId: 'anonymous' // For now, use anonymous
+              })
+            });
+
+            const progressResult = await progressResponse.json();
+            if (progressResult.success) {
+              console.log('✅ Lesson marked as completed!');
+              setShowCelebration(true);
+            }
+          } catch (progressError) {
+            console.error('Error marking lesson as completed:', progressError);
+          }
         }
       } else {
         alert(`Error: ${result.error}`)
@@ -312,6 +332,12 @@ export default function LessonPageClient({ lesson }: LessonPageClientProps) {
           </div>
         </div>
       </div>
+      
+      <CompletionCelebration 
+        isVisible={showCelebration}
+        onClose={() => setShowCelebration(false)}
+        lessonTitle={lesson.title}
+      />
     </div>
   )
 }

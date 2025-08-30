@@ -3,6 +3,8 @@
 import Link from "next/link"
 import { useLocale } from "@/components/LocaleProvider"
 import { t } from "@/lib/translations"
+import ProgressIndicator from "./ProgressIndicator"
+import ProgressSummary from "./ProgressSummary"
 
 interface Lesson {
   id: string
@@ -49,6 +51,8 @@ export default function LanguagePageClient({ language }: LanguagePageClientProps
             {language.description}
           </p>
         </div>
+        
+        <ProgressSummary languageId={language.slug} totalLessons={language.lessons.length} />
       </div>
 
       <div className="grid gap-4">
@@ -57,6 +61,7 @@ export default function LanguagePageClient({ language }: LanguagePageClientProps
             <div className="flex items-start justify-between">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
+                  <ProgressIndicator lessonId={lesson.id} />
                   <span className="text-sm font-medium text-gray-500">
                     {t(locale, "common.lesson")} {lesson.number}
                   </span>

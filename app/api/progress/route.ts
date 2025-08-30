@@ -1,78 +1,110 @@
-import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { NextRequest, NextResponse } from 'next/server'
+import { PrismaClient } from '@prisma/client'
 
-export async function POST(request: Request) {
+const prisma = new PrismaClient()
+
+// GET: Get user progress for a specific lesson or all lessons
+export async function GET(request: NextRequest) {
   try {
-    const { type, id } = await request.json()
+    const { searchParams } = new URL(request.url)
+    const lessonId = searchParams.get('lessonId')
+    const userId = searchParams.get('userId') || 'anonymous' // For now, use anonymous
 
-    // For now, we use userId = null for dev
-    const userId = null
-
-    if (type === "lesson") {
-      // Upsert progress for lesson
-      await prisma.progress.upsert({
+    if (lessonId) {
+      // Get progress for specific lesson
+      const progress = await prisma.progress.findFirst({
         where: {
-          userId_lessonId: {
-            userId,
-            lessonId: id,
-          },
-        },
-        update: {
-          completed: true,
-          updatedAt: new Date(),
-        },
-        create: {
-          userId,
-          lessonId: id,
-          completed: true,
-        },
+          lessonId,
+          userId
+        }
       })
 
-      return NextResponse.json({ success: true })
+      return NextResponse.json({
+        completed: progress?.completed || false,
+        completedAt: progress?.completedAt || null
+      })
+    } else {
+      // Get all progress for user
+      const progress = await prisma.progress.findMany({
+        where: { userId },
+        include: {
+          lesson: {
+            select: {
+              id: true,
+              title: true,
+              number: true,
+              language: {
+                select: {
+                  slug: true,
+                  name: true
+                }
+              }
+            }
+          }
+        }
+      })
+
+      return NextResponse.json({ progress })
     }
-
-    if (type === "exam") {
-      // Upsert progress for exam
-      await prisma.progress.upsert({
-        where: {
-          userId_examId: {
-            userId,
-            examId: id,
-          },
-        },
-        update: {
-          completed: true,
-          updatedAt: new Date(),
-        },
-        create: {
-          userId,
-          examId: id,
-          completed: true,
-        },
-      })
-
-      // Award trophy for completing exam
-      const exam = await prisma.exam.findUnique({
-        where: { id },
-        include: { lesson: { include: { language: true } } }
-      })
-
-      if (exam) {
-        await prisma.trophy.create({
-          data: {
-            userId,
-            title: `${exam.lesson.language.name} Expert`,
-            description: `Completed exam for ${exam.lesson.language.name} Lesson ${exam.lesson.number}`,
-          },
-        })
-      }
-
-      return NextResponse.json({ success: true })
-    }
-
-    return NextResponse.json({ error: "Invalid type" }, { status: 400 })
   } catch (error) {
-    console.error("Progress API error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error('Progress GET error:', error)
+    return NextResponse.json({ error: 'Failed to fetch progress' }, { status: 500 })
+  }
+}
+
+// POST: Mark lesson as completed
+export async function POST(request: NextRequest) {
+  try {
+    const { lessonId, userId = 'anonymous' } = await request.json()
+
+    if (!lessonId) {
+      return NextResponse.json({ error: 'Lesson ID is required' }, { status: 400 })
+    }
+
+    // Check if progress already exists
+    let progress = await prisma.progress.findFirst({
+      where: {
+        lessonId,
+        userId
+      }
+    })
+
+    if (progress) {
+      // Update existing progress
+      progress = await prisma.progress.update({
+        where: { id: progress.id },
+        data: {
+          completed: true,
+          completedAt: new Date()
+        }
+      })
+    } else {
+      // Create new progress
+      progress = await prisma.progress.create({
+        data: {
+          lessonId,
+          userId,
+          completed: true,
+          completedAt: new Date()
+        }
+      })
+    }
+
+    // Update lesson completion status
+    await prisma.lesson.update({
+      where: { id: lessonId },
+      data: { isCompleted: true }
+    })
+
+    return NextResponse.json({
+      success: true,
+      progress: {
+        completed: progress.completed,
+        completedAt: progress.completedAt
+      }
+    })
+  } catch (error) {
+    console.error('Progress POST error:', error)
+    return NextResponse.json({ error: 'Failed to update progress' }, { status: 500 })
   }
 }
