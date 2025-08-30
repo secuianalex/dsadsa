@@ -65,5 +65,15 @@
     "lessons": "Lecții",
     "projectsTotal": "Proiecte totale",
     "projectsToday": "Proiecte astăzi"
+  },
+  "common": {
+    "backToLanguages": "← Înapoi la Limbaje",
+    "backToLanguage": "← Înapoi la {language}",
+    "lesson": "Lecția",
+    "startLesson": "Începe Lecția",
+    "estimatedTime": "Timp Estimat",
+    "minutes": "minute",
+    "exercise": "Exercițiu",
+    "difficulty": "Dificultate"
   }
 }

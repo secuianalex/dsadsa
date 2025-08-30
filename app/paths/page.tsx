@@ -1,4 +1,11 @@
+"use client"
+
+import { useLocale } from "@/components/LocaleProvider"
+import { t } from "@/lib/translations"
+
 export default function PathsPage() {
+  const { locale } = useLocale()
+  
   const learningPaths = [
     {
       title: "Web Development",
@@ -126,10 +133,10 @@ export default function PathsPage() {
     <div className="space-y-8">
       <div className="text-center space-y-4">
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-          Learning Paths
+          {t(locale, "paths.title")}
         </h1>
         <p className="text-gray-400 max-w-2xl mx-auto">
-          Structured learning paths to guide your programming journey from beginner to expert
+          {t(locale, "paths.subtitle")}
         </p>
       </div>
       
@@ -147,13 +154,13 @@ export default function PathsPage() {
             </p>
             <div className="space-y-2">
               <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                <strong>Technologies:</strong> {path.technologies}
+                <strong>{t(locale, "paths.technologies")}</strong> {path.technologies}
               </div>
               <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                <strong>Difficulty:</strong> {path.difficulty}
+                <strong>{t(locale, "paths.difficulty")}</strong> {path.difficulty}
               </div>
               <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                <strong>Duration:</strong> {path.duration}
+                <strong>{t(locale, "paths.duration")}</strong> {path.duration}
               </div>
             </div>
           </div>

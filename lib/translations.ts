@@ -1,18 +1,21 @@
 import enTranslations from '../locales/en.json';
 import roTranslations from '../locales/ro.json';
+import itTranslations from '../locales/it.json';
 
-export type Locale = 'en' | 'ro';
+export type Locale = 'en' | 'ro' | 'it';
 
-export const locales: Locale[] = ['en', 'ro'];
+export const locales: Locale[] = ['en', 'ro', 'it'];
 
 export const localeNames: Record<Locale, string> = {
   en: 'English',
-  ro: 'Română'
+  ro: 'Română',
+  it: 'Italiano'
 };
 
 const translations = {
   en: enTranslations,
-  ro: roTranslations
+  ro: roTranslations,
+  it: itTranslations
 };
 
 export function getTranslation(locale: Locale) {
@@ -22,7 +25,7 @@ export function getTranslation(locale: Locale) {
 export function t(locale: Locale, key: string): string {
   const keys = key.split('.');
   let value: any = translations[locale] || translations.en;
-  
+
   for (const k of keys) {
     if (value && typeof value === 'object' && k in value) {
       value = value[k];
@@ -39,6 +42,6 @@ export function t(locale: Locale, key: string): string {
       break;
     }
   }
-  
+
   return typeof value === 'string' ? value : key;
 }

@@ -1,0 +1,79 @@
+{
+  "nav": {
+    "languages": "Linguaggi",
+    "learningPaths": "Percorsi di Apprendimento"
+  },
+  "home": {
+    "hero": {
+      "title": "Impara la programmazione costruendo progetti reali",
+      "subtitle": "Padroneggia oltre 80 linguaggi e tecnologie attraverso lezioni progressive, sblocca risultati, completa progetti e guadagna trofei mentre impari. Ottieni piani di apprendimento personalizzati dal nostro assistente AI.",
+      "browseLanguages": "Esplora Linguaggi",
+      "explorePaths": "Esplora Percorsi di Apprendimento"
+    },
+    "features": {
+      "title": "Perché scegliere LearnMe?",
+      "progressiveLessons": {
+        "title": "Lezioni Progressive",
+        "description": "Impara passo dopo passo con lezioni attentamente progettate che costruiscono le tue abilità da principiante ad avanzato."
+      },
+      "projectBased": {
+        "title": "Apprendimento Basato su Progetti",
+        "description": "Impara costruendo progetti reali, completando sfide e guadagnando trofei per i tuoi risultati."
+      },
+      "technologies": {
+        "title": "80+ Tecnologie",
+        "description": "Dallo sviluppo web all'AI, dalle app mobile allo sviluppo di giochi - copriamo tutto con lezioni complete."
+      }
+    },
+    "popularPaths": {
+      "title": "Percorsi di Apprendimento Popolari",
+      "viewAll": "Vedi Tutti i Percorsi di Apprendimento"
+    }
+  },
+  "languages": {
+    "title": "Linguaggi di Programmazione",
+    "subtitle": "Esplora linguaggi di programmazione e tecnologie con lezioni complete da principiante ad avanzato.",
+    "searchPlaceholder": "Cerca linguaggi...",
+    "allDifficulties": "Tutte le Difficoltà",
+    "beginner": "Principiante",
+    "intermediate": "Intermedio",
+    "advanced": "Avanzato",
+    "lessons": "lezioni",
+    "progress": "Progresso",
+    "moreLessons": "altre lezioni",
+    "noResults": "Nessun linguaggio trovato che corrisponda alla tua ricerca.",
+    "noResultsSubtitle": "Prova ad aggiustare i termini di ricerca o i filtri."
+  },
+  "paths": {
+    "title": "Percorsi di Apprendimento",
+    "subtitle": "Percorsi di apprendimento strutturati per guidare il tuo viaggio di programmazione da principiante a esperto",
+    "technologies": "Tecnologie:",
+    "difficulty": "Difficoltà:",
+    "duration": "Durata:"
+  },
+  "footer": {
+    "copyright": "© 2025 LearnMe",
+    "builtWith": "Costruito con Next.js & Prisma •",
+    "browseCourses": "Esplora corsi"
+  },
+  "aiChat": {
+    "placeholder": "Dimmi cosa vuoi imparare o costruire...",
+    "send": "Invia"
+  },
+  "stats": {
+    "languages": "Linguaggi",
+    "lessons": "Lezioni",
+    "projectsTotal": "Progetti totali",
+    "projectsToday": "Progetti oggi"
+  },
+  "common": {
+    "backToLanguages": "← Torna ai Linguaggi",
+    "backToLanguage": "← Torna a {language}",
+    "lesson": "Lezione",
+    "startLesson": "Inizia Lezione",
+    "estimatedTime": "Tempo Stimato",
+    "minutes": "minuti",
+    "exercise": "Esercizio",
+    "difficulty": "Difficoltà"
+  }
+}

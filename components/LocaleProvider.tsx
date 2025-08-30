@@ -16,7 +16,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Get the preferred locale from localStorage on client side
     const savedLocale = localStorage.getItem('preferred-locale') as Locale
-    if (savedLocale && (savedLocale === 'en' || savedLocale === 'ro')) {
+    if (savedLocale && (savedLocale === 'en' || savedLocale === 'ro' || savedLocale === 'it')) {
       setLocaleState(savedLocale)
     }
   }, [])

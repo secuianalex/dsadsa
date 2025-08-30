@@ -3,6 +3,8 @@
 import { useState, useMemo } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { useLocale } from "@/components/LocaleProvider"
+import { t } from "@/lib/translations"
 
 interface Language {
   id: string
@@ -23,6 +25,7 @@ interface LanguageSearchProps {
 }
 
 export default function LanguageSearch({ languages, doneIds }: LanguageSearchProps) {
+  const { locale } = useLocale()
   const [searchTerm, setSearchTerm] = useState("")
   const [difficultyFilter, setDifficultyFilter] = useState<string>("all")
 
@@ -52,7 +55,7 @@ export default function LanguageSearch({ languages, doneIds }: LanguageSearchPro
         <div className="flex-1">
           <input
             type="text"
-            placeholder="Search languages..."
+            placeholder={t(locale, "languages.searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="input w-full"
@@ -63,10 +66,10 @@ export default function LanguageSearch({ languages, doneIds }: LanguageSearchPro
           onChange={(e) => setDifficultyFilter(e.target.value)}
           className="input w-full sm:w-48"
         >
-          <option value="all">All Difficulties</option>
-          <option value="beginner">Beginner</option>
-          <option value="intermediate">Intermediate</option>
-          <option value="advanced">Advanced</option>
+          <option value="all">{t(locale, "languages.allDifficulties")}</option>
+          <option value="beginner">{t(locale, "languages.beginner")}</option>
+          <option value="intermediate">{t(locale, "languages.intermediate")}</option>
+          <option value="advanced">{t(locale, "languages.advanced")}</option>
         </select>
       </div>
 
@@ -77,11 +80,11 @@ export default function LanguageSearch({ languages, doneIds }: LanguageSearchPro
           const progressPercentage = progress.total > 0 ? (progress.completed / progress.total) * 100 : 0
           
           return (
-                         <Link
-               key={language.id}
-               href={`/languages/${language.slug}`}
-               className="card card-hover p-6"
-             >
+            <Link
+              key={language.id}
+              href={`/languages/${language.slug}`}
+              className="card card-hover p-6"
+            >
               {/* Language Header */}
               <div className="flex items-center gap-3 mb-4">
                 <Image
@@ -95,20 +98,20 @@ export default function LanguageSearch({ languages, doneIds }: LanguageSearchPro
                   <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>
                     {language.name}
                   </h3>
-                                     <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                     {language.lessons.length} lessons
-                   </p>
+                  <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                    {language.lessons.length} {t(locale, "languages.lessons")}
+                  </p>
                 </div>
               </div>
 
               {/* Progress Bar */}
               <div className="mb-4">
-                                 <div className="flex justify-between text-sm mb-1">
-                   <span style={{ color: 'var(--text-muted)' }}>Progress</span>
-                   <span style={{ color: 'var(--text-muted)' }}>
-                     {progress.completed}/{progress.total}
-                   </span>
-                 </div>
+                <div className="flex justify-between text-sm mb-1">
+                  <span style={{ color: 'var(--text-muted)' }}>{t(locale, "languages.progress")}</span>
+                  <span style={{ color: 'var(--text-muted)' }}>
+                    {progress.completed}/{progress.total}
+                  </span>
+                </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
                     className="bg-brand-500 h-2 rounded-full transition-all duration-300"
@@ -145,7 +148,7 @@ export default function LanguageSearch({ languages, doneIds }: LanguageSearchPro
                         lesson.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400' :
                         'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400'
                       }`}>
-                        {lesson.difficulty}
+                        {t(locale, `languages.${lesson.difficulty}`)}
                       </span>
                       {doneIds.has(lesson.id) && (
                         <span className="text-green-500">✓</span>
@@ -153,29 +156,29 @@ export default function LanguageSearch({ languages, doneIds }: LanguageSearchPro
                     </div>
                   </div>
                 ))}
-                                 {language.lessons.length > 3 && (
-                   <div className="text-center">
-                     <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                       +{language.lessons.length - 3} more lessons
-                     </span>
-                   </div>
-                 )}
+                {language.lessons.length > 3 && (
+                  <div className="text-center">
+                    <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                      +{language.lessons.length - 3} {t(locale, "languages.moreLessons")}
+                    </span>
+                  </div>
+                )}
               </div>
             </Link>
           )
         })}
       </div>
 
-             {filteredLanguages.length === 0 && (
-         <div className="text-center py-12">
-           <p className="text-lg" style={{ color: 'var(--text-muted)' }}>
-             No languages found matching your search.
-           </p>
-           <p className="text-sm mt-2" style={{ color: 'var(--text-muted)' }}>
-             Try adjusting your search terms or filters.
-           </p>
-         </div>
-       )}
+      {filteredLanguages.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-lg" style={{ color: 'var(--text-muted)' }}>
+            {t(locale, "languages.noResults")}
+          </p>
+          <p className="text-sm mt-2" style={{ color: 'var(--text-muted)' }}>
+            {t(locale, "languages.noResultsSubtitle")}
+          </p>
+        </div>
+      )}
     </div>
   )
 }

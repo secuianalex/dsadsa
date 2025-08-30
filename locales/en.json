@@ -65,5 +65,15 @@
     "lessons": "Lessons",
     "projectsTotal": "Projects total",
     "projectsToday": "Projects today"
+  },
+  "common": {
+    "backToLanguages": "← Back to Languages",
+    "backToLanguage": "← Back to {language}",
+    "lesson": "Lesson",
+    "startLesson": "Start Lesson",
+    "estimatedTime": "Estimated Time",
+    "minutes": "minutes",
+    "exercise": "Exercise",
+    "difficulty": "Difficulty"
   }
 }
