@@ -77,11 +77,11 @@ export default function LanguageSearch({ languages, doneIds }: LanguageSearchPro
           const progressPercentage = progress.total > 0 ? (progress.completed / progress.total) * 100 : 0
           
           return (
-            <Link
-              key={language.id}
-              href={`/languages/${language.slug}`}
-              className="card card-hover p-6"
-            >
+                         <Link
+               key={language.id}
+               href={`/languages/${language.slug}`}
+               className="card card-hover p-6"
+             >
               {/* Language Header */}
               <div className="flex items-center gap-3 mb-4">
                 <Image
@@ -95,20 +95,20 @@ export default function LanguageSearch({ languages, doneIds }: LanguageSearchPro
                   <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>
                     {language.name}
                   </h3>
-                  <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                    {language.lessons.length} lessons
-                  </p>
+                                     <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                     {language.lessons.length} lessons
+                   </p>
                 </div>
               </div>
 
               {/* Progress Bar */}
               <div className="mb-4">
-                <div className="flex justify-between text-sm mb-1">
-                  <span style={{ color: 'var(--text-muted)' }}>Progress</span>
-                  <span style={{ color: 'var(--text-muted)' }}>
-                    {progress.completed}/{progress.total}
-                  </span>
-                </div>
+                                 <div className="flex justify-between text-sm mb-1">
+                   <span style={{ color: 'var(--text-muted)' }}>Progress</span>
+                   <span style={{ color: 'var(--text-muted)' }}>
+                     {progress.completed}/{progress.total}
+                   </span>
+                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
                     className="bg-brand-500 h-2 rounded-full transition-all duration-300"
@@ -153,29 +153,29 @@ export default function LanguageSearch({ languages, doneIds }: LanguageSearchPro
                     </div>
                   </div>
                 ))}
-                {language.lessons.length > 3 && (
-                  <div className="text-center">
-                    <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                      +{language.lessons.length - 3} more lessons
-                    </span>
-                  </div>
-                )}
+                                 {language.lessons.length > 3 && (
+                   <div className="text-center">
+                     <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                       +{language.lessons.length - 3} more lessons
+                     </span>
+                   </div>
+                 )}
               </div>
             </Link>
           )
         })}
       </div>
 
-      {filteredLanguages.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-lg" style={{ color: 'var(--text-muted)' }}>
-            No languages found matching your search.
-          </p>
-          <p className="text-sm mt-2" style={{ color: 'var(--text-muted)' }}>
-            Try adjusting your search terms or filters.
-          </p>
-        </div>
-      )}
+             {filteredLanguages.length === 0 && (
+         <div className="text-center py-12">
+           <p className="text-lg" style={{ color: 'var(--text-muted)' }}>
+             No languages found matching your search.
+           </p>
+           <p className="text-sm mt-2" style={{ color: 'var(--text-muted)' }}>
+             Try adjusting your search terms or filters.
+           </p>
+         </div>
+       )}
     </div>
   )
 }

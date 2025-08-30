@@ -4,7 +4,7 @@ import * as React from "react"
 
 type Stats = {
   languages: number
-  courses: number
+  lessons: number
   projectsTotal: number
   projectsToday: number
 }
@@ -49,7 +49,7 @@ export default function StatsBar() {
 
   const items = [
     { label: "Languages", value: stats.languages },
-    { label: "Courses", value: stats.courses },
+    { label: "Lessons", value: stats.lessons },
     { label: "Projects total", value: stats.projectsTotal },
     { label: "Projects today", value: stats.projectsToday },
   ]

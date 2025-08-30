@@ -5,9 +5,9 @@ export async function GET() {
   const data = await prisma.language.findMany({
     orderBy: { name: "asc" },
     include: {
-      levels: {
+      lessons: {
         orderBy: { number: "asc" },
-        include: { courses: true, freestyle: true },
+        include: { exam: true },
       },
     },
   })

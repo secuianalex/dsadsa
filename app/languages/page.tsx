@@ -1,47 +1,40 @@
-import { prisma } from "@/lib/prisma"
 import LanguageSearch from "@/components/LanguageSearch"
+import { prisma } from "@/lib/prisma"
 
-// --- helpers ---------------------------------------------------------------
-
-async function getLanguages() {
-  return prisma.language.findMany({
+export default async function LanguagesPage() {
+  // Fetch languages data
+  const languages = await prisma.language.findMany({
     orderBy: { name: "asc" },
     include: {
       lessons: {
         orderBy: { number: "asc" },
+        select: {
+          id: true,
+          number: true,
+          title: true,
+          difficulty: true,
+          estimatedTime: true,
+        },
       },
     },
   })
-}
 
-async function getCompletedLessonIdsForDevUser() {
-  // For now we count progress for the "dev" user (userId = null).
-  // Later we can switch this to an authenticated user id from session.
-  const rows = await prisma.progress.findMany({
-    where: { userId: null, completed: true, lessonId: { not: null } },
-    select: { lessonId: true },
-  })
-  return new Set(rows.map((r) => r.lessonId!))
-}
-
-// --- page ------------------------------------------------------------------
-
-export default async function LanguagesPage() {
-  const [languages, doneIds] = await Promise.all([
-    getLanguages(),
-    getCompletedLessonIdsForDevUser(),
-  ])
+  // For now, we'll use an empty set for doneIds (completed lessons)
+  // In a real app, this would come from user progress data
+  const doneIds = new Set<string>()
 
   return (
-    <section className="space-y-6">
-      <header className="card p-6">
-        <h1 className="section-title">Browse Languages</h1>
-        <p className="subtle">
-          Pick a language and start learning. Your progress shows right on each card. Use the search and filters to find exactly what you're looking for.
+    <div className="space-y-8">
+      <div className="text-center space-y-4">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+          Programming Languages
+        </h1>
+        <p className="text-gray-400 max-w-2xl mx-auto">
+          Explore programming languages and technologies with comprehensive lessons from beginner to advanced.
         </p>
-      </header>
-
+      </div>
+      
       <LanguageSearch languages={languages} doneIds={doneIds} />
-    </section>
+    </div>
   )
 }

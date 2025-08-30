@@ -1,24 +1,10 @@
-// app/layout.tsx
-import "./globals.css"
-import type { Metadata } from "next"
-import NavBar from "@/components/NavBar"
-import Providers from "@/components/Providers"
-import ThemeScript from "@/components/ThemeScript"
-// import { Inter } from "next/font/google"
+import { ReactNode } from 'react'
+import NavBar from '@/components/NavBar'
+import Providers from '@/components/Providers'
+import ThemeScript from '@/components/ThemeScript'
+import './globals.css'
 
-// const inter = Inter({
-//   subsets: ["latin"],
-//   display: "swap",
-//   variable: "--font-inter",
-// })
-
-export const metadata: Metadata = {
-  title: "LearnMe",
-  description: "Learn programming by doing. Levels, projects, trophies.",
-  icons: { icon: "/favicon.svg" },
-}
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>

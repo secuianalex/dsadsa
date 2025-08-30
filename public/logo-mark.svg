@@ -1,11 +1,24 @@
-<svg width="512" height="512" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="28" height="28" rx="6" fill="url(#gradient)"/>
+  
+  <!-- Book icon -->
+  <path d="M6 8C6 7.44772 6.44772 7 7 7H21C21.5523 7 22 7.44772 22 8V20C22 20.5523 21.5523 21 21 21H7C6.44772 21 6 20.5523 6 20V8Z" fill="white" fill-opacity="0.9"/>
+  
+  <!-- Book pages -->
+  <path d="M8 9H20V19H8V9Z" fill="url(#gradient)" fill-opacity="0.8"/>
+  
+  <!-- Text lines -->
+  <rect x="9" y="11" width="10" height="1" rx="0.5" fill="white" fill-opacity="0.7"/>
+  <rect x="9" y="13" width="8" height="1" rx="0.5" fill="white" fill-opacity="0.7"/>
+  <rect x="9" y="15" width="6" height="1" rx="0.5" fill="white" fill-opacity="0.7"/>
+  
+  <!-- LM text -->
+  <text x="14" y="24" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="white" fill-opacity="0.9">LM</text>
+  
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#2B79FF"/>
-      <stop offset="1" stop-color="#1A4DA8"/>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6"/>
+      <stop offset="100%" style="stop-color:#8B5CF6"/>
     </linearGradient>
   </defs>
-  <rect rx="48" ry="48" x="0" y="0" width="256" height="256" fill="url(#g)"/>
-  <path d="M64 64v128h72v-24H88V64z" fill="white" opacity="0.95"/>
-  <path d="M155 192V88l21 22 20-22v104h-20v-48l-10 12-11-12v48z" fill="white" opacity="0.95"/>
 </svg>
