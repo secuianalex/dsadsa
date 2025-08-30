@@ -65,6 +65,12 @@ model Lesson {
   language    Language   @relation(fields: [languageId], references: [id])
   exam        Exam?
   progress    Progress[]
+  
+  // New fields for code verification system
+  testCases   String?    // JSON string containing test cases for code verification
+  solution    String?    // Reference solution code (optional, for hints)
+  hints       String?    // JSON string containing hints for the exercise
+  isCompleted Boolean    @default(false) // Track if lesson has been completed
 
   @@index([languageId])
   @@unique([languageId, number])
