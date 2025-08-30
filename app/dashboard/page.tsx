@@ -323,6 +323,24 @@ export default function Dashboard() {
                 >
                   🏆 View Achievements
                 </button>
+                <Link
+                  href="/portfolio"
+                  className="block w-full text-left px-4 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
+                >
+                  🎨 Portfolio Builder
+                </Link>
+                <Link
+                  href="/resume"
+                  className="block w-full text-left px-4 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors"
+                >
+                  📄 Resume Generator
+                </Link>
+                <Link
+                  href="/certificates"
+                  className="block w-full text-left px-4 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+                >
+                  🏆 Certificates
+                </Link>
               </div>
             </div>
 

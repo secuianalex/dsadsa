@@ -1,7 +1,8 @@
 {
   "nav": {
     "languages": "Linguaggi",
-    "learningPaths": "Percorsi di Apprendimento"
+    "learningPaths": "Percorsi di Apprendimento",
+    "portfolio": "Portfolio"
   },
   "home": {
     "hero": {
