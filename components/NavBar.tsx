@@ -3,6 +3,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
+import { useSession } from "next-auth/react"
 import ThemeToggle from "@/components/ThemeToggle"
 import UserMenu from "@/components/UserMenu"
 import LanguageSelector from "@/components/LanguageSelector"
@@ -11,6 +12,7 @@ import { t } from "@/lib/translations"
 
 export default function NavBar() {
   const { locale } = useLocale()
+  const { data: session } = useSession()
   
   const LINKS = [
     { href: "/languages", label: t(locale, "nav.languages") },

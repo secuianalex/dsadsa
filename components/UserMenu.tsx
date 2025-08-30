@@ -20,12 +20,14 @@ export default function UserMenu() {
   // Not signed in
   if (!session) {
     return (
-      <button
-        onClick={() => signIn()}
-        className="px-3 py-1.5 rounded-md border text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
-      >
-        Sign in
-      </button>
+      <div className="flex items-center gap-2">
+        <Link
+          href="/auth/signin"
+          className="px-3 py-1.5 rounded-md bg-blue-500 text-white text-sm hover:bg-blue-600 transition-colors"
+        >
+          Sign In
+        </Link>
+      </div>
     )
   }
 

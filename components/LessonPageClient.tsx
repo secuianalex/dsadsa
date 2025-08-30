@@ -5,6 +5,10 @@ import { useState } from "react"
 import { useLocale } from "@/components/LocaleProvider"
 import { t } from "@/lib/translations"
 import CodeEditor from "./CodeEditor"
+import LiveOutput from "./LiveOutput"
+import LivePreview from "./LivePreview"
+import CodeFlowVisualization from "./CodeFlowVisualization"
+import SmartHints from "./SmartHints"
 import CompletionCelebration from "./CompletionCelebration"
 
 interface TestResult {
@@ -22,6 +26,14 @@ interface VerificationResult {
   passed: boolean
   totalTests: number
   passedTests: number
+}
+
+interface ExecutionResult {
+  success: boolean
+  output: string
+  error: string | null
+  executionTime: number
+  memoryUsage?: number
 }
 
 interface LessonPageClientProps {
@@ -52,12 +64,26 @@ export default function LessonPageClient({ lesson }: LessonPageClientProps) {
   const [showSolution, setShowSolution] = useState(false)
   const [currentHintIndex, setCurrentHintIndex] = useState(0)
   const [showCelebration, setShowCelebration] = useState(false)
+  const [showLiveOutput, setShowLiveOutput] = useState(false)
+  const [showLivePreview, setShowLivePreview] = useState(false)
+  const [showCodeFlow, setShowCodeFlow] = useState(false)
+  const [showSmartHints, setShowSmartHints] = useState(false)
+  const [lastExecutionResult, setLastExecutionResult] = useState<ExecutionResult | null>(null)
 
   const handleCodeChange = (value: string | undefined) => {
     setCode(value || '')
     // Clear previous results when code changes
     if (verificationResult) {
       setVerificationResult(null)
+    }
+    
+    // Auto-enable live execution for supported languages
+    const supportedLanguages = ['javascript', 'js', 'python', 'html', 'css']
+    if (supportedLanguages.includes(lesson.language.slug.toLowerCase())) {
+      setShowLiveOutput(true)
+      if (['html', 'css'].includes(lesson.language.slug.toLowerCase())) {
+        setShowLivePreview(true)
+      }
     }
   }
 
@@ -169,6 +195,25 @@ export default function LessonPageClient({ lesson }: LessonPageClientProps) {
     }
   }
 
+  const handleExecutionComplete = (result: ExecutionResult) => {
+    setLastExecutionResult(result)
+  }
+
+  const isLiveExecutionSupported = () => {
+    const supportedLanguages = ['javascript', 'js', 'python', 'html', 'css']
+    return supportedLanguages.includes(lesson.language.slug.toLowerCase())
+  }
+
+  const isCodeFlowSupported = () => {
+    const supportedLanguages = ['javascript', 'js', 'python']
+    return supportedLanguages.includes(lesson.language.slug.toLowerCase())
+  }
+
+  const isSmartHintsSupported = () => {
+    const supportedLanguages = ['javascript', 'js', 'python', 'css', 'html']
+    return supportedLanguages.includes(lesson.language.slug.toLowerCase())
+  }
+
   return (
     <div className="h-screen flex flex-col">
       {/* Header */}
@@ -216,7 +261,7 @@ export default function LessonPageClient({ lesson }: LessonPageClientProps) {
             <p className="text-sm text-gray-600 mb-3">{lesson.exercise}</p>
             
             {/* Help buttons */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               {hasHints && (
                 <button
                   onClick={() => setShowHints(!showHints)}
@@ -232,6 +277,61 @@ export default function LessonPageClient({ lesson }: LessonPageClientProps) {
                 >
                   {showSolution ? 'Hide Solution' : 'Show Solution'}
                 </button>
+              )}
+              
+              {/* Live Execution Controls */}
+              {isLiveExecutionSupported() && (
+                <>
+                  <button
+                    onClick={() => setShowLiveOutput(!showLiveOutput)}
+                    className={`px-3 py-1 text-sm rounded transition-colors ${
+                      showLiveOutput 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-500 text-white hover:bg-gray-600'
+                    }`}
+                  >
+                    {showLiveOutput ? 'Hide Output' : 'Show Live Output'}
+                  </button>
+                  
+                  {['html', 'css'].includes(lesson.language.slug.toLowerCase()) && (
+                    <button
+                      onClick={() => setShowLivePreview(!showLivePreview)}
+                      className={`px-3 py-1 text-sm rounded transition-colors ${
+                        showLivePreview 
+                          ? 'bg-purple-600 text-white' 
+                          : 'bg-gray-500 text-white hover:bg-gray-600'
+                      }`}
+                    >
+                      {showLivePreview ? 'Hide Preview' : 'Show Live Preview'}
+                    </button>
+                  )}
+                  
+                  {isCodeFlowSupported() && (
+                    <button
+                      onClick={() => setShowCodeFlow(!showCodeFlow)}
+                      className={`px-3 py-1 text-sm rounded transition-colors ${
+                        showCodeFlow 
+                          ? 'bg-orange-600 text-white' 
+                          : 'bg-gray-500 text-white hover:bg-gray-600'
+                      }`}
+                    >
+                      {showCodeFlow ? 'Hide Flow' : 'Show Code Flow'}
+                    </button>
+                  )}
+                  
+                  {isSmartHintsSupported() && (
+                    <button
+                      onClick={() => setShowSmartHints(!showSmartHints)}
+                      className={`px-3 py-1 text-sm rounded transition-colors ${
+                        showSmartHints 
+                          ? 'bg-indigo-600 text-white' 
+                          : 'bg-gray-500 text-white hover:bg-gray-600'
+                      }`}
+                    >
+                      {showSmartHints ? 'Hide Hints' : 'Show Smart Hints'}
+                    </button>
+                  )}
+                </>
               )}
             </div>
 
@@ -276,10 +376,65 @@ export default function LessonPageClient({ lesson }: LessonPageClientProps) {
           <div className="flex-1">
             <CodeEditor
               language={lesson.language.slug}
+              lessonId={lesson.id}
               defaultValue={getDefaultCode()}
               onChange={handleCodeChange}
             />
           </div>
+
+          {/* Live Output */}
+          {showLiveOutput && (
+            <div className="flex-shrink-0 border-t">
+              <LiveOutput
+                language={lesson.language.slug}
+                code={code}
+                isExecuting={showLiveOutput}
+                onExecutionComplete={handleExecutionComplete}
+              />
+            </div>
+          )}
+
+          {/* Live Preview */}
+          {showLivePreview && (
+            <div className="flex-shrink-0 border-t">
+              <LivePreview
+                language={lesson.language.slug}
+                code={code}
+                isVisible={showLivePreview}
+              />
+            </div>
+          )}
+
+          {/* Code Flow Visualization */}
+          {showCodeFlow && (
+            <div className="flex-shrink-0 border-t">
+              <CodeFlowVisualization
+                language={lesson.language.slug}
+                code={code}
+                isVisible={showCodeFlow}
+                onStepComplete={(step) => {
+                  console.log('Step completed:', step)
+                }}
+              />
+            </div>
+          )}
+
+          {/* Smart Hints */}
+          {showSmartHints && (
+            <div className="flex-shrink-0 border-t">
+              <SmartHints
+                language={lesson.language.slug}
+                code={code}
+                lessonId={lesson.id}
+                userLevel="beginner"
+                learningProgress={50}
+                isVisible={showSmartHints}
+                onHintDismiss={(hintId) => {
+                  console.log('Hint dismissed:', hintId)
+                }}
+              />
+            </div>
+          )}
 
           {/* Verification Results */}
           {verificationResult && (

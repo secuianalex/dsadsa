@@ -1,20 +1,45 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Editor from '@monaco-editor/react'
+import { useAutoSave } from '@/hooks/useAutoSave'
+import { useUserPreferences } from '@/hooks/useUserPreferences'
 
 interface CodeEditorProps {
   language: string
+  lessonId: string
   defaultValue?: string
   onChange?: (value: string | undefined) => void
 }
 
-export default function CodeEditor({ language, defaultValue = '', onChange }: CodeEditorProps) {
+export default function CodeEditor({ language, lessonId, defaultValue = '', onChange }: CodeEditorProps) {
   const [code, setCode] = useState(defaultValue)
+  const { preferences } = useUserPreferences()
+  
+  // Auto-save functionality
+  const autoSave = useAutoSave({
+    lessonId,
+    language,
+    delay: 2000,
+    enabled: preferences?.autoSave ?? true
+  })
+
+  // Load saved content on mount
+  useEffect(() => {
+    const savedContent = autoSave.loadSavedContent()
+    if (savedContent && savedContent !== defaultValue) {
+      setCode(savedContent)
+      onChange?.(savedContent)
+    }
+  }, [autoSave, defaultValue, onChange])
 
   const handleEditorChange = (value: string | undefined) => {
-    setCode(value || '')
-    onChange?.(value)
+    const newCode = value || ''
+    setCode(newCode)
+    onChange?.(newCode)
+    
+    // Trigger auto-save
+    autoSave.autoSave(newCode)
   }
 
   // Map language slugs to Monaco Editor language IDs
@@ -56,26 +81,61 @@ export default function CodeEditor({ language, defaultValue = '', onChange }: Co
     }
   }
 
+  const getEditorTheme = () => {
+    return preferences?.preferences?.editorTheme || 'vs-dark'
+  }
+
+  const getEditorOptions = () => {
+    const userPrefs = preferences?.preferences
+    return {
+      minimap: { enabled: userPrefs?.showMinimap ?? true },
+      fontSize: userPrefs?.fontSize ?? 14,
+      wordWrap: userPrefs?.wordWrap ? 'on' : 'off',
+      automaticLayout: true,
+      scrollBeyondLastLine: false,
+      roundedSelection: false,
+      readOnly: false,
+      cursorStyle: 'line',
+      contextmenu: true,
+      mouseWheelZoom: true,
+      quickSuggestions: userPrefs?.enableAutoComplete ?? true,
+      suggestOnTriggerCharacters: userPrefs?.enableAutoComplete ?? true,
+      acceptSuggestionOnCommitCharacter: true,
+      acceptSuggestionOnEnter: 'on',
+      snippetSuggestions: 'top',
+      wordBasedSuggestions: true,
+      parameterHints: {
+        enabled: true
+      },
+      lineNumbers: userPrefs?.showLineNumbers ? 'on' : 'off',
+      tabSize: userPrefs?.tabSize ?? 2,
+      insertSpaces: true,
+      detectIndentation: false,
+    }
+  }
+
   return (
-    <div className="h-full">
+    <div className="h-full relative">
+      {/* Auto-save indicator */}
+      {autoSave.hasUnsavedChanges && (
+        <div className="absolute top-2 right-2 z-10 bg-yellow-500 text-white px-2 py-1 rounded text-xs">
+          Unsaved changes
+        </div>
+      )}
+      
+      {autoSave.isSaving && (
+        <div className="absolute top-2 right-2 z-10 bg-blue-500 text-white px-2 py-1 rounded text-xs">
+          Saving...
+        </div>
+      )}
+
       <Editor
         height="100%"
         defaultLanguage={getMonacoLanguage(language)}
-        defaultValue={defaultValue}
+        defaultValue={code}
         onChange={handleEditorChange}
-        theme="vs-dark"
-        options={{
-          minimap: { enabled: false },
-          fontSize: 14,
-          lineNumbers: 'on',
-          roundedSelection: false,
-          scrollBeyondLastLine: false,
-          automaticLayout: true,
-          wordWrap: 'on',
-          tabSize: 2,
-          insertSpaces: true,
-          detectIndentation: false,
-        }}
+        theme={getEditorTheme()}
+        options={getEditorOptions()}
       />
     </div>
   )

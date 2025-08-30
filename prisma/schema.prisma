@@ -39,10 +39,26 @@ model User {
   email    String?    @unique
   password String?
   image    String?
+  
+  // User preferences
+  favoriteLanguages String? // JSON array of language slugs
+  theme             String  @default("light") // "light" or "dark"
+  autoSave          Boolean @default(true)
+  showHints         Boolean @default(true)
+  
+  // Learning preferences
+  learningLevel     String  @default("beginner") // "beginner", "intermediate", "advanced"
+  preferredPace     String  @default("normal") // "slow", "normal", "fast"
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
   accounts Account[]
   sessions Session[]
   progress Progress[]
   trophies Trophy[]
+  userPreferences UserPreferences?
 }
 
 model Language {
@@ -133,4 +149,29 @@ model PathLanguage {
   language   Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
 
   @@unique([pathId, languageId]) // prevent duplicates
+}
+
+model UserPreferences {
+  id String @id @default(cuid())
+  userId String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Editor preferences
+  editorTheme     String  @default("vs-dark") // Monaco editor theme
+  fontSize        Int     @default(14)
+  tabSize         Int     @default(2)
+  wordWrap        Boolean @default(true)
+  
+  // Learning preferences
+  showLineNumbers Boolean @default(true)
+  showMinimap     Boolean @default(true)
+  enableAutoComplete Boolean @default(true)
+  
+  // Notification preferences
+  emailNotifications Boolean @default(true)
+  achievementNotifications Boolean @default(true)
+  progressReminders Boolean @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
