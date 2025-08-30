@@ -33,7 +33,7 @@ export default function AIChat({ paths }: AIChatProps) {
     {
       id: '1',
       type: 'ai',
-      content: "Hi! I'm your AI learning assistant. Tell me what you want to learn or build, and I'll create a personalized learning plan for you. For example:\n\n• \"I want to build a website\"\n• \"I want to create a mobile app\"\n• \"I want to learn data science\"\n• \"I want to automate tasks\"\n\nWhat's your goal?",
+      content: "Hey there! I'm Dev, your AI programming tutor! 🚀\n\nTell me what you want to learn or build, and I'll create a personalized learning plan for you. For example:\n\n• \"I want to build a website\"\n• \"I want to create a mobile app\"\n• \"I want to learn data science\"\n• \"I want to automate tasks\"\n\nWhat's your goal?",
       timestamp: new Date()
     }
   ])
@@ -256,11 +256,11 @@ Tell me more specifically what you want to build or learn, and I'll create a det
     <div className="card p-6 max-w-4xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-          <span className="text-white font-bold text-lg">AI</span>
+          <span className="text-white font-bold text-lg">Dev</span>
         </div>
         <div>
           <h2 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>
-            AI Learning Assistant
+            Dev - AI Programming Tutor
           </h2>
           <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
             Get personalized learning plans and recommendations

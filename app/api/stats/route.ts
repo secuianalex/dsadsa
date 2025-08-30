@@ -3,9 +3,9 @@ import { prisma } from "@/lib/prisma"
 
 export async function GET() {
   try {
-    const [languages, lessons, projectsTotal, projectsToday] = await Promise.all([
+    const [languages, uniqueUsers, projectsTotal, projectsToday] = await Promise.all([
       prisma.language.count(),
-      prisma.lesson.count(),
+      prisma.user.count(),
       prisma.progress.count({ where: { completed: true } }),
       prisma.progress.count({ 
         where: { 
@@ -19,7 +19,7 @@ export async function GET() {
 
     return NextResponse.json({
       languages,
-      lessons,
+      uniqueUsers,
       projectsTotal,
       projectsToday,
     })

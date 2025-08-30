@@ -27,20 +27,14 @@ interface LanguageSearchProps {
 export default function LanguageSearch({ languages, doneIds }: LanguageSearchProps) {
   const { locale } = useLocale()
   const [searchTerm, setSearchTerm] = useState("")
-  const [difficultyFilter, setDifficultyFilter] = useState<string>("all")
 
   const filteredLanguages = useMemo(() => {
     return languages.filter((lang) => {
       const matchesSearch = lang.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            lang.slug.toLowerCase().includes(searchTerm.toLowerCase())
-      
-      if (difficultyFilter === "all") return matchesSearch
-      
-      // Check if any lesson matches the difficulty filter
-      const hasMatchingDifficulty = lang.lessons.some(lesson => lesson.difficulty === difficultyFilter)
-      return matchesSearch && hasMatchingDifficulty
+      return matchesSearch
     })
-  }, [languages, searchTerm, difficultyFilter])
+  }, [languages, searchTerm])
 
   const getProgressForLanguage = (language: Language) => {
     const totalLessons = language.lessons.length
@@ -48,9 +42,15 @@ export default function LanguageSearch({ languages, doneIds }: LanguageSearchPro
     return { completed: completedLessons, total: totalLessons }
   }
 
+  const getLevelProgress = (language: Language, level: string) => {
+    const levelLessons = language.lessons.filter(lesson => lesson.difficulty === level)
+    const completedLevelLessons = levelLessons.filter(lesson => doneIds.has(lesson.id)).length
+    return { completed: completedLevelLessons, total: levelLessons.length }
+  }
+
   return (
     <div className="space-y-6">
-      {/* Search and Filters */}
+      {/* Search */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
           <input
@@ -61,16 +61,6 @@ export default function LanguageSearch({ languages, doneIds }: LanguageSearchPro
             className="input w-full"
           />
         </div>
-        <select
-          value={difficultyFilter}
-          onChange={(e) => setDifficultyFilter(e.target.value)}
-          className="input w-full sm:w-48"
-        >
-          <option value="all">{t(locale, "languages.allDifficulties")}</option>
-          <option value="beginner">{t(locale, "languages.beginner")}</option>
-          <option value="intermediate">{t(locale, "languages.intermediate")}</option>
-          <option value="advanced">{t(locale, "languages.advanced")}</option>
-        </select>
       </div>
 
       {/* Language Grid */}
@@ -78,6 +68,11 @@ export default function LanguageSearch({ languages, doneIds }: LanguageSearchPro
         {filteredLanguages.map((language) => {
           const progress = getProgressForLanguage(language)
           const progressPercentage = progress.total > 0 ? (progress.completed / progress.total) * 100 : 0
+          
+          // Get progress for each level
+          const beginnerProgress = getLevelProgress(language, 'beginner')
+          const intermediateProgress = getLevelProgress(language, 'intermediate')
+          const advancedProgress = getLevelProgress(language, 'advanced')
           
           return (
             <Link
@@ -99,12 +94,12 @@ export default function LanguageSearch({ languages, doneIds }: LanguageSearchPro
                     {language.name}
                   </h3>
                   <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                    {language.lessons.length} {t(locale, "languages.lessons")}
+                    3 {t(locale, "languages.levels")}
                   </p>
                 </div>
               </div>
 
-              {/* Progress Bar */}
+              {/* Overall Progress Bar */}
               <div className="mb-4">
                 <div className="flex justify-between text-sm mb-1">
                   <span style={{ color: 'var(--text-muted)' }}>{t(locale, "languages.progress")}</span>
@@ -120,49 +115,88 @@ export default function LanguageSearch({ languages, doneIds }: LanguageSearchPro
                 </div>
               </div>
 
-              {/* Lesson Preview */}
+              {/* Levels Preview */}
               <div className="space-y-2">
-                {language.lessons.slice(0, 3).map((lesson) => (
-                  <div
-                    key={lesson.id}
-                    className={`flex items-center justify-between p-2 rounded text-sm ${
-                      doneIds.has(lesson.id)
-                        ? 'bg-green-100 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                        : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700'
-                    } border`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
-                        {lesson.number}
-                      </span>
-                      <span 
-                        className="truncate"
-                        style={{ color: 'var(--text-primary)' }}
-                      >
-                        {lesson.title}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className={`text-xs px-1.5 py-0.5 rounded ${
-                        lesson.difficulty === 'beginner' ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' :
-                        lesson.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400' :
-                        'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400'
-                      }`}>
-                        {t(locale, `languages.${lesson.difficulty}`)}
-                      </span>
-                      {doneIds.has(lesson.id) && (
-                        <span className="text-green-500">✓</span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-                {language.lessons.length > 3 && (
-                  <div className="text-center">
-                    <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                      +{language.lessons.length - 3} {t(locale, "languages.moreLessons")}
+                {/* Beginner Level */}
+                <div className={`flex items-center justify-between p-2 rounded text-sm ${
+                  beginnerProgress.completed === beginnerProgress.total && beginnerProgress.total > 0
+                    ? 'bg-green-100 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                    : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700'
+                } border`}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
+                      1
+                    </span>
+                    <span 
+                      className="truncate"
+                      style={{ color: 'var(--text-primary)' }}
+                    >
+                      Beginner
                     </span>
                   </div>
-                )}
+                  <div className="flex items-center gap-1">
+                    <span className="bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400 text-xs px-1.5 py-0.5 rounded">
+                      {beginnerProgress.completed}/{beginnerProgress.total}
+                    </span>
+                    {beginnerProgress.completed === beginnerProgress.total && beginnerProgress.total > 0 && (
+                      <span className="text-green-500">✓</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Intermediate Level */}
+                <div className={`flex items-center justify-between p-2 rounded text-sm ${
+                  intermediateProgress.completed === intermediateProgress.total && intermediateProgress.total > 0
+                    ? 'bg-green-100 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                    : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700'
+                } border`}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
+                      2
+                    </span>
+                    <span 
+                      className="truncate"
+                      style={{ color: 'var(--text-primary)' }}
+                    >
+                      Intermediate
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400 text-xs px-1.5 py-0.5 rounded">
+                      {intermediateProgress.completed}/{intermediateProgress.total}
+                    </span>
+                    {intermediateProgress.completed === intermediateProgress.total && intermediateProgress.total > 0 && (
+                      <span className="text-green-500">✓</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Advanced Level */}
+                <div className={`flex items-center justify-between p-2 rounded text-sm ${
+                  advancedProgress.completed === advancedProgress.total && advancedProgress.total > 0
+                    ? 'bg-green-100 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                    : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700'
+                } border`}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
+                      3
+                    </span>
+                    <span 
+                      className="truncate"
+                      style={{ color: 'var(--text-primary)' }}
+                    >
+                      Advanced
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400 text-xs px-1.5 py-0.5 rounded">
+                      {advancedProgress.completed}/{advancedProgress.total}
+                    </span>
+                    {advancedProgress.completed === advancedProgress.total && advancedProgress.total > 0 && (
+                      <span className="text-green-500">✓</span>
+                    )}
+                  </div>
+                </div>
               </div>
             </Link>
           )

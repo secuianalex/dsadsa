@@ -1,378 +1,401 @@
-interface Achievement {
+// Achievement and Certification System for Dev AI Tutor
+
+export interface Achievement {
   id: string
   title: string
   description: string
   icon: string
-  category: 'learning' | 'streak' | 'mastery' | 'social' | 'special'
-  rarity: 'common' | 'rare' | 'epic' | 'legendary'
+  category: 'learning' | 'project' | 'milestone' | 'special'
   requirements: {
-    type: 'lessons_completed' | 'streak_days' | 'languages_mastered' | 'perfect_scores' | 'time_spent' | 'custom'
+    type: 'concepts_completed' | 'exercises_completed' | 'projects_completed' | 'time_spent' | 'streak_days'
     value: number
-    language?: string
   }
   points: number
+  rarity: 'common' | 'rare' | 'epic' | 'legendary'
   unlockedAt?: Date
 }
 
-interface UserProgress {
-  lessonsCompleted: number
-  streakDays: number
-  languagesMastered: string[]
-  perfectScores: number
-  timeSpent: number // in minutes
-  totalPoints: number
-  achievements: string[]
+export interface Certification {
+  id: string
+  title: string
+  language: string
+  level: 'beginner' | 'intermediate' | 'advanced'
+  issuedAt: Date
+  score: number
+  certificateNumber: string
+  skills: string[]
+  validUntil?: Date
 }
 
-// Achievement database
-export const achievements: Achievement[] = [
+export interface UserAchievements {
+  userId: string
+  achievements: Achievement[]
+  totalPoints: number
+  level: 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond'
+  certifications: Certification[]
+  streakDays: number
+  lastActivity: Date
+}
+
+// Achievement definitions
+export const ACHIEVEMENTS: Achievement[] = [
   // Learning Achievements
   {
-    id: 'first_lesson',
+    id: 'first-concept',
     title: 'First Steps',
-    description: 'Complete your first lesson',
-    icon: '🎯',
+    description: 'Complete your first programming concept',
+    icon: '🌱',
     category: 'learning',
-    rarity: 'common',
-    requirements: { type: 'lessons_completed', value: 1 },
-    points: 10
+    requirements: { type: 'concepts_completed', value: 1 },
+    points: 10,
+    rarity: 'common'
   },
   {
-    id: 'lesson_master',
-    title: 'Lesson Master',
-    description: 'Complete 10 lessons',
+    id: 'concept-master',
+    title: 'Concept Master',
+    description: 'Complete 10 programming concepts',
     icon: '📚',
     category: 'learning',
-    rarity: 'common',
-    requirements: { type: 'lessons_completed', value: 10 },
-    points: 50
+    requirements: { type: 'concepts_completed', value: 10 },
+    points: 50,
+    rarity: 'rare'
   },
   {
-    id: 'dedicated_learner',
-    title: 'Dedicated Learner',
-    description: 'Complete 50 lessons',
-    icon: '🎓',
+    id: 'exercise-champion',
+    title: 'Exercise Champion',
+    description: 'Complete 25 coding exercises',
+    icon: '💪',
     category: 'learning',
-    rarity: 'rare',
-    requirements: { type: 'lessons_completed', value: 50 },
-    points: 200
-  },
-  {
-    id: 'learning_champion',
-    title: 'Learning Champion',
-    description: 'Complete 100 lessons',
-    icon: '🏆',
-    category: 'learning',
-    rarity: 'epic',
-    requirements: { type: 'lessons_completed', value: 100 },
-    points: 500
-  },
-
-  // Streak Achievements
-  {
-    id: 'week_warrior',
-    title: 'Week Warrior',
-    description: 'Maintain a 7-day learning streak',
-    icon: '🔥',
-    category: 'streak',
-    rarity: 'common',
-    requirements: { type: 'streak_days', value: 7 },
-    points: 100
-  },
-  {
-    id: 'month_master',
-    title: 'Month Master',
-    description: 'Maintain a 30-day learning streak',
-    icon: '⚡',
-    category: 'streak',
-    rarity: 'rare',
-    requirements: { type: 'streak_days', value: 30 },
-    points: 300
-  },
-  {
-    id: 'streak_legend',
-    title: 'Streak Legend',
-    description: 'Maintain a 100-day learning streak',
-    icon: '👑',
-    category: 'streak',
-    rarity: 'legendary',
-    requirements: { type: 'streak_days', value: 100 },
-    points: 1000
-  },
-
-  // Mastery Achievements
-  {
-    id: 'javascript_master',
-    title: 'JavaScript Master',
-    description: 'Complete all JavaScript lessons',
-    icon: '⚡',
-    category: 'mastery',
-    rarity: 'rare',
-    requirements: { type: 'languages_mastered', value: 1, language: 'javascript' },
-    points: 300
-  },
-  {
-    id: 'python_master',
-    title: 'Python Master',
-    description: 'Complete all Python lessons',
-    icon: '🐍',
-    category: 'mastery',
-    rarity: 'rare',
-    requirements: { type: 'languages_mastered', value: 1, language: 'python' },
-    points: 300
+    requirements: { type: 'exercises_completed', value: 25 },
+    points: 75,
+    rarity: 'epic'
   },
   {
     id: 'polyglot',
-    title: 'Polyglot',
-    description: 'Master 3 different programming languages',
+    title: 'Programming Polyglot',
+    description: 'Learn concepts in 3 different programming languages',
     icon: '🌍',
-    category: 'mastery',
-    rarity: 'epic',
-    requirements: { type: 'languages_mastered', value: 3 },
-    points: 800
-  },
-  {
-    id: 'language_grandmaster',
-    title: 'Language Grandmaster',
-    description: 'Master 5 different programming languages',
-    icon: '🏛️',
-    category: 'mastery',
-    rarity: 'legendary',
-    requirements: { type: 'languages_mastered', value: 5 },
-    points: 1500
+    category: 'learning',
+    requirements: { type: 'concepts_completed', value: 15 },
+    points: 100,
+    rarity: 'legendary'
   },
 
-  // Perfect Score Achievements
+  // Project Achievements
   {
-    id: 'perfectionist',
-    title: 'Perfectionist',
-    description: 'Get perfect scores on 10 lessons',
-    icon: '💎',
-    category: 'learning',
-    rarity: 'rare',
-    requirements: { type: 'perfect_scores', value: 10 },
-    points: 200
+    id: 'first-project',
+    title: 'Project Pioneer',
+    description: 'Complete your first project',
+    icon: '🚀',
+    category: 'project',
+    requirements: { type: 'projects_completed', value: 1 },
+    points: 25,
+    rarity: 'common'
   },
   {
-    id: 'flawless_execution',
-    title: 'Flawless Execution',
-    description: 'Get perfect scores on 50 lessons',
-    icon: '✨',
-    category: 'learning',
-    rarity: 'epic',
-    requirements: { type: 'perfect_scores', value: 50 },
-    points: 600
+    id: 'project-master',
+    title: 'Project Master',
+    description: 'Complete 5 projects',
+    icon: '🏆',
+    category: 'project',
+    requirements: { type: 'projects_completed', value: 5 },
+    points: 150,
+    rarity: 'epic'
+  },
+  {
+    id: 'perfect-score',
+    title: 'Perfect Score',
+    description: 'Get a perfect score on any project',
+    icon: '⭐',
+    category: 'project',
+    requirements: { type: 'projects_completed', value: 1 },
+    points: 50,
+    rarity: 'rare'
   },
 
-  // Time Spent Achievements
+  // Milestone Achievements
   {
-    id: 'hour_learner',
-    title: 'Hour Learner',
-    description: 'Spend 1 hour learning',
-    icon: '⏰',
-    category: 'learning',
-    rarity: 'common',
-    requirements: { type: 'time_spent', value: 60 },
-    points: 50
+    id: 'beginner-graduate',
+    title: 'Beginner Graduate',
+    description: 'Complete beginner level in any language',
+    icon: '🎓',
+    category: 'milestone',
+    requirements: { type: 'projects_completed', value: 1 },
+    points: 100,
+    rarity: 'rare'
   },
   {
-    id: 'dedicated_hours',
-    title: 'Dedicated Hours',
-    description: 'Spend 10 hours learning',
-    icon: '📅',
-    category: 'learning',
-    rarity: 'rare',
-    requirements: { type: 'time_spent', value: 600 },
-    points: 250
+    id: 'intermediate-graduate',
+    title: 'Intermediate Graduate',
+    description: 'Complete intermediate level in any language',
+    icon: '🎓',
+    category: 'milestone',
+    requirements: { type: 'projects_completed', value: 1 },
+    points: 200,
+    rarity: 'epic'
   },
   {
-    id: 'time_master',
-    title: 'Time Master',
-    description: 'Spend 100 hours learning',
-    icon: '⏳',
-    category: 'learning',
-    rarity: 'epic',
-    requirements: { type: 'time_spent', value: 6000 },
-    points: 1000
+    id: 'advanced-graduate',
+    title: 'Advanced Graduate',
+    description: 'Complete advanced level in any language',
+    icon: '🎓',
+    category: 'milestone',
+    requirements: { type: 'projects_completed', value: 1 },
+    points: 500,
+    rarity: 'legendary'
   },
 
   // Special Achievements
   {
-    id: 'early_adopter',
-    title: 'Early Adopter',
-    description: 'Join during the beta phase',
-    icon: '🚀',
+    id: 'streak-master',
+    title: 'Streak Master',
+    description: 'Maintain a 7-day learning streak',
+    icon: '🔥',
     category: 'special',
-    rarity: 'legendary',
-    requirements: { type: 'custom', value: 1 },
-    points: 500
+    requirements: { type: 'streak_days', value: 7 },
+    points: 75,
+    rarity: 'rare'
   },
   {
-    id: 'bug_hunter',
-    title: 'Bug Hunter',
-    description: 'Report a helpful bug or suggestion',
-    icon: '🐛',
+    id: 'dedicated-learner',
+    title: 'Dedicated Learner',
+    description: 'Spend 10 hours learning',
+    icon: '⏰',
     category: 'special',
-    rarity: 'rare',
-    requirements: { type: 'custom', value: 1 },
-    points: 150
+    requirements: { type: 'time_spent', value: 600 }, // 10 hours in minutes
+    points: 100,
+    rarity: 'epic'
   }
 ]
 
-// Check if user has unlocked new achievements
-export function checkAchievements(userProgress: UserProgress): Achievement[] {
-  const unlockedAchievements: Achievement[] = []
-  const userAchievements = new Set(userProgress.achievements)
+// Certification templates
+export const CERTIFICATION_TEMPLATES = {
+  javascript: {
+    beginner: {
+      title: 'JavaScript Beginner Certification',
+      skills: ['Variables and Data Types', 'Functions', 'Conditionals', 'Loops', 'Arrays']
+    },
+    intermediate: {
+      title: 'JavaScript Intermediate Certification',
+      skills: ['Objects and Methods', 'Async Programming', 'Error Handling', 'Modules', 'DOM Manipulation']
+    },
+    advanced: {
+      title: 'JavaScript Advanced Certification',
+      skills: ['Closures and Scope', 'Prototypes', 'Functional Programming', 'Design Patterns', 'Testing']
+    }
+  },
+  python: {
+    beginner: {
+      title: 'Python Beginner Certification',
+      skills: ['Variables and Types', 'Functions', 'Conditionals', 'Loops', 'Lists and Tuples']
+    },
+    intermediate: {
+      title: 'Python Intermediate Certification',
+      skills: ['Classes and Objects', 'File Handling', 'Exceptions', 'Modules', 'List Comprehensions']
+    },
+    advanced: {
+      title: 'Python Advanced Certification',
+      skills: ['Decorators', 'Generators', 'Context Managers', 'Metaclasses', 'Async/Await']
+    }
+  },
+  java: {
+    beginner: {
+      title: 'Java Beginner Certification',
+      skills: ['Variables and Types', 'Methods', 'Conditionals', 'Loops', 'Arrays']
+    },
+    intermediate: {
+      title: 'Java Intermediate Certification',
+      skills: ['Classes and Objects', 'Inheritance', 'Interfaces', 'Collections', 'Exceptions']
+    },
+    advanced: {
+      title: 'Java Advanced Certification',
+      skills: ['Generics', 'Multithreading', 'Reflection', 'Design Patterns', 'JUnit Testing']
+    }
+  },
+  cpp: {
+    beginner: {
+      title: 'C++ Beginner Certification',
+      skills: ['Variables and Types', 'Functions', 'Conditionals', 'Loops', 'Arrays']
+    },
+    intermediate: {
+      title: 'C++ Intermediate Certification',
+      skills: ['Classes and Objects', 'Pointers', 'References', 'Templates', 'File I/O']
+    },
+    advanced: {
+      title: 'C++ Advanced Certification',
+      skills: ['Smart Pointers', 'STL Containers', 'Move Semantics', 'Lambda Expressions', 'Concurrency']
+    }
+  },
+  typescript: {
+    beginner: {
+      title: 'TypeScript Beginner Certification',
+      skills: ['Types and Interfaces', 'Functions', 'Classes', 'Generics Basics', 'Modules']
+    },
+    intermediate: {
+      title: 'TypeScript Intermediate Certification',
+      skills: ['Advanced Types', 'Decorators', 'Async/Await', 'Error Handling', 'Testing']
+    },
+    advanced: {
+      title: 'TypeScript Advanced Certification',
+      skills: ['Conditional Types', 'Mapped Types', 'Utility Types', 'Design Patterns', 'Performance']
+    }
+  },
+  rust: {
+    beginner: {
+      title: 'Rust Beginner Certification',
+      skills: ['Variables and Types', 'Functions', 'Ownership', 'Structs', 'Enums']
+    },
+    intermediate: {
+      title: 'Rust Intermediate Certification',
+      skills: ['Borrowing', 'Lifetimes', 'Traits', 'Error Handling', 'Collections']
+    },
+    advanced: {
+      title: 'Rust Advanced Certification',
+      skills: ['Smart Pointers', 'Concurrency', 'Macros', 'Unsafe Rust', 'WebAssembly']
+    }
+  }
+}
 
-  for (const achievement of achievements) {
-    if (userAchievements.has(achievement.id)) continue
+// Helper functions
+export function checkAchievements(
+  userProgress: {
+    completedConcepts: string[]
+    exercisesCompleted: number
+    totalTimeSpent: number
+    streakDays: number
+  },
+  completedProjects: number,
+  currentAchievements: Achievement[]
+): Achievement[] {
+  const newAchievements: Achievement[] = []
+  const unlockedIds = currentAchievements.map(a => a.id)
 
-    let isUnlocked = false
+  ACHIEVEMENTS.forEach(achievement => {
+    if (unlockedIds.includes(achievement.id)) return
 
-    switch (achievement.requirements.type) {
-      case 'lessons_completed':
-        isUnlocked = userProgress.lessonsCompleted >= achievement.requirements.value
+    let shouldUnlock = false
+    const req = achievement.requirements
+
+    switch (req.type) {
+      case 'concepts_completed':
+        shouldUnlock = userProgress.completedConcepts.length >= req.value
         break
-
-      case 'streak_days':
-        isUnlocked = userProgress.streakDays >= achievement.requirements.value
+      case 'exercises_completed':
+        shouldUnlock = userProgress.exercisesCompleted >= req.value
         break
-
-      case 'languages_mastered':
-        if (achievement.requirements.language) {
-          isUnlocked = userProgress.languagesMastered.includes(achievement.requirements.language)
-        } else {
-          isUnlocked = userProgress.languagesMastered.length >= achievement.requirements.value
-        }
+      case 'projects_completed':
+        shouldUnlock = completedProjects >= req.value
         break
-
-      case 'perfect_scores':
-        isUnlocked = userProgress.perfectScores >= achievement.requirements.value
-        break
-
       case 'time_spent':
-        isUnlocked = userProgress.timeSpent >= achievement.requirements.value
+        shouldUnlock = userProgress.totalTimeSpent >= req.value
         break
-
-      case 'custom':
-        // Custom achievements are manually awarded
-        isUnlocked = false
+      case 'streak_days':
+        shouldUnlock = userProgress.streakDays >= req.value
         break
     }
 
-    if (isUnlocked) {
-      unlockedAchievements.push({
+    if (shouldUnlock) {
+      newAchievements.push({
         ...achievement,
         unlockedAt: new Date()
       })
     }
-  }
+  })
 
-  return unlockedAchievements
+  return newAchievements
 }
 
-// Get achievement progress for a specific achievement
-export function getAchievementProgress(achievement: Achievement, userProgress: UserProgress): {
-  current: number
-  required: number
-  percentage: number
-  isCompleted: boolean
-} {
+export function calculateUserLevel(totalPoints: number): 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond' {
+  if (totalPoints >= 1000) return 'diamond'
+  if (totalPoints >= 500) return 'platinum'
+  if (totalPoints >= 200) return 'gold'
+  if (totalPoints >= 50) return 'silver'
+  return 'bronze'
+}
+
+export function generateCertificate(
+  language: string,
+  level: 'beginner' | 'intermediate' | 'advanced',
+  score: number,
+  userId: string
+): Certification {
+  const template = CERTIFICATION_TEMPLATES[language as keyof typeof CERTIFICATION_TEMPLATES]?.[level]
+  
+  if (!template) {
+    throw new Error(`No certification template found for ${language} ${level}`)
+  }
+
+  const certificateNumber = `CERT-${language.toUpperCase()}-${level.toUpperCase()}-${Date.now()}-${userId.slice(0, 8)}`
+
+  return {
+    id: Date.now().toString(),
+    title: template.title,
+    language,
+    level,
+    issuedAt: new Date(),
+    score,
+    certificateNumber,
+    skills: template.skills,
+    validUntil: new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1000) // 2 years
+  }
+}
+
+export function getAchievementProgress(
+  achievement: Achievement,
+  userProgress: {
+    completedConcepts: string[]
+    exercisesCompleted: number
+    totalTimeSpent: number
+    streakDays: number
+  },
+  completedProjects: number
+): { current: number; required: number; percentage: number } {
+  const req = achievement.requirements
   let current = 0
 
-  switch (achievement.requirements.type) {
-    case 'lessons_completed':
-      current = userProgress.lessonsCompleted
+  switch (req.type) {
+    case 'concepts_completed':
+      current = userProgress.completedConcepts.length
+      break
+    case 'exercises_completed':
+      current = userProgress.exercisesCompleted
+      break
+    case 'projects_completed':
+      current = completedProjects
+      break
+    case 'time_spent':
+      current = userProgress.totalTimeSpent
       break
     case 'streak_days':
       current = userProgress.streakDays
       break
-    case 'languages_mastered':
-      if (achievement.requirements.language) {
-        current = userProgress.languagesMastered.includes(achievement.requirements.language) ? 1 : 0
-      } else {
-        current = userProgress.languagesMastered.length
-      }
-      break
-    case 'perfect_scores':
-      current = userProgress.perfectScores
-      break
-    case 'time_spent':
-      current = userProgress.timeSpent
-      break
-    case 'custom':
-      current = 0
-      break
   }
 
-  const required = achievement.requirements.value
-  const percentage = Math.min((current / required) * 100, 100)
-  const isCompleted = current >= required
-
-  return { current, required, percentage, isCompleted }
-}
-
-// Get achievements by category
-export function getAchievementsByCategory(category: string): Achievement[] {
-  return achievements.filter(achievement => achievement.category === category)
-}
-
-// Get achievements by rarity
-export function getAchievementsByRarity(rarity: string): Achievement[] {
-  return achievements.filter(achievement => achievement.rarity === rarity)
-}
-
-// Calculate total points from achievements
-export function calculateTotalPoints(unlockedAchievements: string[]): number {
-  return achievements
-    .filter(achievement => unlockedAchievements.includes(achievement.id))
-    .reduce((total, achievement) => total + achievement.points, 0)
-}
-
-// Get user level based on total points
-export function getUserLevel(totalPoints: number): {
-  level: number
-  title: string
-  nextLevelPoints: number
-  progress: number
-} {
-  const levels = [
-    { level: 1, title: 'Novice', points: 0 },
-    { level: 2, title: 'Apprentice', points: 100 },
-    { level: 3, title: 'Student', points: 300 },
-    { level: 4, title: 'Scholar', points: 600 },
-    { level: 5, title: 'Expert', points: 1000 },
-    { level: 6, title: 'Master', points: 1500 },
-    { level: 7, title: 'Grandmaster', points: 2500 },
-    { level: 8, title: 'Legend', points: 4000 },
-    { level: 9, title: 'Mythic', points: 6000 },
-    { level: 10, title: 'Divine', points: 10000 }
-  ]
-
-  let currentLevel = levels[0]
-  let nextLevel = levels[1]
-
-  for (let i = 0; i < levels.length - 1; i++) {
-    if (totalPoints >= levels[i].points && totalPoints < levels[i + 1].points) {
-      currentLevel = levels[i]
-      nextLevel = levels[i + 1]
-      break
-    }
-  }
-
-  if (totalPoints >= levels[levels.length - 1].points) {
-    currentLevel = levels[levels.length - 1]
-    nextLevel = { ...currentLevel, points: currentLevel.points }
-  }
-
-  const progress = nextLevel.points > currentLevel.points 
-    ? ((totalPoints - currentLevel.points) / (nextLevel.points - currentLevel.points)) * 100
-    : 100
+  const percentage = Math.min((current / req.value) * 100, 100)
 
   return {
-    level: currentLevel.level,
-    title: currentLevel.title,
-    nextLevelPoints: nextLevel.points,
-    progress: Math.min(progress, 100)
+    current,
+    required: req.value,
+    percentage: Math.round(percentage)
+  }
+}
+
+export function getRarityColor(rarity: string): string {
+  switch (rarity) {
+    case 'common': return 'text-gray-600'
+    case 'rare': return 'text-blue-600'
+    case 'epic': return 'text-purple-600'
+    case 'legendary': return 'text-yellow-600'
+    default: return 'text-gray-600'
+  }
+}
+
+export function getRarityBackground(rarity: string): string {
+  switch (rarity) {
+    case 'common': return 'bg-gray-100'
+    case 'rare': return 'bg-blue-100'
+    case 'epic': return 'bg-purple-100'
+    case 'legendary': return 'bg-yellow-100'
+    default: return 'bg-gray-100'
   }
 }

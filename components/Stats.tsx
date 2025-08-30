@@ -6,7 +6,7 @@ import { t } from "@/lib/translations"
 
 type Stats = {
   languages: number
-  lessons: number
+  uniqueUsers: number
   projectsTotal: number
   projectsToday: number
 }
@@ -52,7 +52,7 @@ export default function StatsBar() {
 
   const items = [
     { label: t(locale, "stats.languages"), value: stats.languages },
-    { label: t(locale, "stats.lessons"), value: stats.lessons },
+    { label: "Unique Users", value: stats.uniqueUsers },
     { label: t(locale, "stats.projectsTotal"), value: stats.projectsTotal },
     { label: t(locale, "stats.projectsToday"), value: stats.projectsToday },
   ]
