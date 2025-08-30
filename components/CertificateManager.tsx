@@ -112,18 +112,18 @@ export default function CertificateManager() {
     }
   }
 
-            const viewCertificate = (certificate: Certificate) => {
-            window.open(`/api/certificates/${certificate.id}`, '_blank')
-          }
+  const viewCertificate = (certificate: Certificate) => {
+    window.open(`/api/certificates/${certificate.id}`, '_blank')
+  }
 
-          const downloadCertificate = (certificate: Certificate) => {
-            const link = document.createElement('a')
-            link.href = `/api/certificates/${certificate.id}`
-            link.download = `${certificate.title}-Certificate.html`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-          }
+  const downloadCertificate = (certificate: Certificate) => {
+    const link = document.createElement('a')
+    link.href = `/api/certificates/${certificate.id}`
+    link.download = `${certificate.title}-Certificate.html`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   const printCertificate = () => {
     if (!previewHtml) return
@@ -199,50 +199,61 @@ export default function CertificateManager() {
             <div className="bg-gray-50 p-6 rounded-lg border">
               <h2 className="text-xl font-semibold mb-4">Available Certificates</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {languages.map((language) => {
-                  const existingCert = certificates.find(c => c.language === language.slug)
-                  return (
-                    <div key={language.slug} className="bg-white p-4 rounded-lg border hover:shadow-md transition-shadow">
-                      <div className="flex items-center gap-3 mb-3">
-                        <span className="text-2xl">{getLanguageIcon(language.slug)}</span>
-                        <div>
-                          <h3 className="font-semibold capitalize">{language.name}</h3>
-                          <p className="text-sm text-gray-600">{language.lessonCount} lessons</p>
-                        </div>
-                      </div>
-                      
-                      {existingCert ? (
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2 text-green-600">
-                            <span>✅</span>
-                            <span className="text-sm font-medium">Certificate Earned</span>
+                {isLoading ? (
+                  <div className="col-span-full text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+                    <p className="mt-2 text-gray-600">Loading languages...</p>
+                  </div>
+                ) : languages && languages.length > 0 ? (
+                  languages.map((language) => {
+                    const existingCert = certificates.find(c => c.language === language.slug)
+                    return (
+                      <div key={language.slug} className="bg-white p-4 rounded-lg border hover:shadow-md transition-shadow">
+                        <div className="flex items-center gap-3 mb-3">
+                          <span className="text-2xl">{getLanguageIcon(language.slug)}</span>
+                          <div>
+                            <h3 className="font-semibold capitalize">{language.name}</h3>
+                            <p className="text-sm text-gray-600">{language.lessonCount} lessons</p>
                           </div>
-                                                        <div className="flex gap-2">
-                                <button
-                                  onClick={() => viewCertificate(existingCert)}
-                                  className="flex-1 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm"
-                                >
-                                  👁️ View
-                                </button>
-                                <button
-                                  onClick={() => downloadCertificate(existingCert)}
-                                  className="flex-1 px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-sm"
-                                >
-                                  📥 Download
-                                </button>
-                              </div>
                         </div>
-                      ) : (
-                        <button
-                          onClick={() => checkEligibility(language.slug)}
-                          className="w-full px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm"
-                        >
-                          🎯 Check Eligibility
-                        </button>
-                      )}
-                    </div>
-                  )
-                })}
+                        
+                        {existingCert ? (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 text-green-600">
+                              <span>✅</span>
+                              <span className="text-sm font-medium">Certificate Earned</span>
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => viewCertificate(existingCert)}
+                                className="flex-1 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm"
+                              >
+                                👁️ View
+                              </button>
+                              <button
+                                onClick={() => downloadCertificate(existingCert)}
+                                className="flex-1 px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-sm"
+                              >
+                                📥 Download
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => checkEligibility(language.slug)}
+                            className="w-full px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm"
+                          >
+                            🎯 Check Eligibility
+                          </button>
+                        )}
+                      </div>
+                    )
+                  })
+                ) : (
+                  <div className="col-span-full text-center py-8">
+                    <p className="text-gray-600">No languages available</p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -315,20 +326,20 @@ export default function CertificateManager() {
                         <span className="text-green-600">✅</span>
                         <span className="text-sm text-gray-600">Verified Certificate</span>
                       </div>
-                                                    <div className="flex gap-2">
-                                <button
-                                  onClick={() => viewCertificate(certificate)}
-                                  className="flex-1 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm"
-                                >
-                                  👁️ View
-                                </button>
-                                <button
-                                  onClick={() => downloadCertificate(certificate)}
-                                  className="flex-1 px-3 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors text-sm"
-                                >
-                                  📥 Download
-                                </button>
-                              </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => viewCertificate(certificate)}
+                          className="flex-1 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm"
+                        >
+                          👁️ View
+                        </button>
+                        <button
+                          onClick={() => downloadCertificate(certificate)}
+                          className="flex-1 px-3 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors text-sm"
+                        >
+                          📥 Download
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>

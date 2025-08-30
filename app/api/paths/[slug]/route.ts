@@ -24,8 +24,7 @@ export async function GET(
                 }
               }
             }
-          },
-          // Note: orderBy removed temporarily due to Prisma client issues
+          }
         }
       }
     })
