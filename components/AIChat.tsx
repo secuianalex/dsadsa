@@ -36,6 +36,24 @@ interface AIChatProps {
 export default function AIChat({ paths }: AIChatProps) {
   const { locale } = useLocale()
   const [messages, setMessages] = useState<Message[]>([])
+  const [inputValue, setInputValue] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBottom = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+    }
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [isLoading])
 
   // Send initial greeting when component mounts
   useEffect(() => {
@@ -93,24 +111,6 @@ export default function AIChat({ paths }: AIChatProps) {
 
     sendInitialMessage()
   }, [])
-  const [inputValue, setInputValue] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const messagesContainerRef = useRef<HTMLDivElement>(null)
-
-  const scrollToBottom = () => {
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
-    }
-  }
-
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages])
-
-  useEffect(() => {
-    scrollToBottom()
-  }, [isLoading])
 
   const generateAIResponse = async (userMessage: string): Promise<{
     response: string
@@ -157,20 +157,20 @@ export default function AIChat({ paths }: AIChatProps) {
       const data = await response.json()
       console.log('API Response data:', data)
       
-              if (data.error) {
-          console.error('API returned error:', data.error)
-          throw new Error(data.error || 'API returned an error')
-        }
+      if (data.error) {
+        console.error('API returned error:', data.error)
+        throw new Error(data.error || 'API returned an error')
+      }
 
       console.log('Returning AI response:', data.response)
       return {
         response: data.response,
         recommendation: data.recommendation
       }
-          } catch (error) {
-        console.error('AI Chat Error:', error)
-        throw error // Re-throw to let handleSubmit handle it
-      }
+    } catch (error) {
+      console.error('AI Chat Error:', error)
+      throw error // Re-throw to let handleSubmit handle it
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

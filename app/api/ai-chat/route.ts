@@ -11,7 +11,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, context } = await request.json()
+    const { message, conversationHistory, context } = await request.json()
 
     if (!message || typeof message !== 'string') {
       return NextResponse.json(
@@ -52,6 +52,7 @@ export async function POST(request: NextRequest) {
 - Provide specific, actionable advice
 - Ask follow-up questions to better understand their needs
 - Always suggest next steps in their learning journey
+- Remember previous conversations and build on them
 
 **Available Learning Paths:**
 - Frontend Development (HTML, CSS, JavaScript, React)
@@ -67,7 +68,8 @@ export async function POST(request: NextRequest) {
 - Testing (Manual testing, automation, quality assurance)
 
 **Response Format:**
-- Start with a friendly greeting and acknowledgment
+- If this is the first message, introduce yourself warmly
+- If continuing a conversation, acknowledge their previous messages
 - Provide specific recommendations based on their goal
 - Include relevant learning paths and technologies
 - Give estimated timeframes for learning
@@ -76,28 +78,40 @@ export async function POST(request: NextRequest) {
 
 Remember: You're not just answering questions, you're mentoring someone on their programming journey!`
 
+    // Build messages array with conversation history
+    const messages: any[] = [
+      {
+        role: "system",
+        content: systemPrompt
+      }
+    ]
+
+    // Add conversation history if provided
+    if (conversationHistory && Array.isArray(conversationHistory)) {
+      // Filter out any invalid messages and limit to last 10 for context
+      const validHistory = conversationHistory
+        .filter(msg => msg.role && msg.content && typeof msg.content === 'string')
+        .slice(-10) // Keep last 10 messages for context
+      
+      messages.push(...validHistory)
+    }
+
+    // Add current user message
+    messages.push({
+      role: "user",
+      content: message
+    })
+
+    console.log('Sending to OpenAI:', {
+      messageCount: messages.length,
+      currentMessage: message,
+      hasHistory: conversationHistory && conversationHistory.length > 0
+    })
+
     // Generate AI response
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt
-        },
-        {
-          role: "user",
-          content: `Student says: "${message}"
-
-Please provide a personalized response that:
-1. Acknowledges their goal
-2. Recommends the most suitable learning path(s)
-3. Explains what they'll learn and why it's perfect for them
-4. Gives realistic timeframes
-5. Encourages them to start their journey
-
-Make it engaging, specific, and actionable!`
-        }
-      ],
+      messages,
       temperature: 0.7,
       max_tokens: 1500,
       presence_penalty: 0.1,
