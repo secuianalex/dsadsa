@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
+export async function GET() {
+  return NextResponse.json({ 
+    message: 'AI Chat API is working! Use POST method to send messages.',
+    status: 'ready',
+    timestamp: new Date().toISOString()
+  })
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { message, context } = await request.json()
