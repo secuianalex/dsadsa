@@ -16,13 +16,18 @@ export default function HomePage() {
     <div className="space-y-8 md:space-y-16">
       {/* Hero */}
       <section className="text-center space-y-4 md:space-y-6 px-4">
-        <Image
-          src="/logo-wordmark.svg"
-          alt="LearnMe"
-          width={300}
-          height={100}
-          className="mx-auto w-48 md:w-auto"
-        />
+        <div className="flex flex-col items-center">
+          <Image
+            src="/logo-wordmark.svg"
+            alt="LearnMe"
+            width={300}
+            height={100}
+            className="mx-auto w-48 md:w-auto"
+          />
+          <span className="text-sm font-semibold bg-blue-500 text-white px-2 py-1 rounded mt-2">
+            DEV
+          </span>
+        </div>
         <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight px-4">
           {session?.user ? `Welcome back, ${session.user.name || session.user.email}!` : t(locale, "home.hero.title")}
         </h1>

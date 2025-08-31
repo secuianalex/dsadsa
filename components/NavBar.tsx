@@ -29,7 +29,12 @@ export default function NavBar() {
       <div className="mx-auto flex items-center justify-between w-full max-w-[72rem] px-4 md:px-6 lg:px-8 h-14">
         {/* Logo + Brand */}
         <Link href="/" className="flex items-center gap-2 font-bold text-lg" style={{ color: 'var(--text-primary)' }}>
-          <Image src="/logo-mark.svg" alt="LearnMe" width={28} height={28} />
+          <div className="flex flex-col items-center">
+            <Image src="/logo-mark.svg" alt="LearnMe" width={28} height={28} />
+            <span className="text-xs font-semibold bg-blue-500 text-white px-1 rounded text-center leading-tight" style={{ fontSize: '8px', lineHeight: '1' }}>
+              DEV
+            </span>
+          </div>
           <span className="hidden sm:inline">LearnMe</span>
         </Link>
 
