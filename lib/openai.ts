@@ -1,11 +1,13 @@
 // Enhanced OpenAI Integration for Dev AI Tutor
 import OpenAI from 'openai'
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  dangerouslyAllowBrowser: false // Only use on server side
-})
+// Initialize OpenAI client conditionally
+const openai = process.env.OPENAI_API_KEY 
+  ? new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+      dangerouslyAllowBrowser: false // Only use on server side
+    })
+  : null
 
 export interface AIResponse {
   content: string
@@ -66,6 +68,10 @@ export async function generateAIResponse(
   prompt: TeachingPrompt,
   userMessage: string
 ): Promise<AIResponse> {
+  if (!openai) {
+    throw new Error('OpenAI client not initialized. Please check your OPENAI_API_KEY environment variable.')
+  }
+  
   try {
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
