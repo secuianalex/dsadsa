@@ -314,7 +314,7 @@ export default function AIChat({ paths }: AIChatProps) {
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: aiResponse.response,
+        content: aiResponse.response || "I'm sorry, I couldn't generate a response right now.",
         timestamp: new Date(),
         recommendation: aiResponse.recommendation
       }
