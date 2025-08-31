@@ -55,6 +55,10 @@ export default function AIChat({ paths }: AIChatProps) {
     scrollToBottom()
   }, [messages])
 
+  useEffect(() => {
+    scrollToBottom()
+  }, [isLoading])
+
   const analyzeUserGoal = (userMessage: string): {
     recommendedPath: string
     pathTitle: string
