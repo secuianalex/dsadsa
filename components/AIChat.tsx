@@ -35,14 +35,64 @@ interface AIChatProps {
 
 export default function AIChat({ paths }: AIChatProps) {
   const { locale } = useLocale()
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      type: 'ai',
-      content: "Hey there! I'm Dev, your AI programming tutor! 🤖\n\nI'm here to help you learn programming and guide you on your coding journey. I can:\n\n• Answer any programming questions\n• Explain concepts in simple terms\n• Help you debug code\n• Suggest learning paths\n• Provide code examples\n• Teach you step by step\n\nWhat would you like to learn today? Just tell me what you're interested in or ask me anything about programming!",
-      timestamp: new Date()
+  const [messages, setMessages] = useState<Message[]>([])
+
+  // Send initial greeting when component mounts
+  useEffect(() => {
+    const sendInitialMessage = async () => {
+      setIsLoading(true)
+      try {
+        const response = await fetch('/api/ai-chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: "Hello! I'm ready to learn programming. Can you introduce yourself and tell me how you can help me?",
+            context: {
+              language: 'general',
+              level: 'beginner',
+              concept: 'initial-greeting'
+            }
+          }),
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          const initialMessage: Message = {
+            id: '1',
+            type: 'ai',
+            content: data.response || "Hello! I'm Dev, your AI programming tutor. How can I help you learn today?",
+            timestamp: new Date(),
+            recommendation: data.recommendation
+          }
+          setMessages([initialMessage])
+        } else {
+          // Fallback if API fails
+          const fallbackMessage: Message = {
+            id: '1',
+            type: 'ai',
+            content: "Hello! I'm Dev, your AI programming tutor. I'm here to help you learn programming! What would you like to learn today?",
+            timestamp: new Date()
+          }
+          setMessages([fallbackMessage])
+        }
+      } catch (error) {
+        console.error('Error sending initial message:', error)
+        const fallbackMessage: Message = {
+          id: '1',
+          type: 'ai',
+          content: "Hello! I'm Dev, your AI programming tutor. I'm here to help you learn programming! What would you like to learn today?",
+          timestamp: new Date()
+        }
+        setMessages([fallbackMessage])
+      } finally {
+        setIsLoading(false)
+      }
     }
-  ])
+
+    sendInitialMessage()
+  }, [])
   const [inputValue, setInputValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -74,6 +124,12 @@ export default function AIChat({ paths }: AIChatProps) {
     try {
       console.log('Calling AI API with message:', userMessage)
       
+      // Prepare conversation history for context
+      const conversationHistory = messages.map(msg => ({
+        role: msg.type === 'user' ? 'user' : 'assistant',
+        content: msg.content
+      }))
+      
       const response = await fetch('/api/ai-chat', {
         method: 'POST',
         headers: {
@@ -81,6 +137,7 @@ export default function AIChat({ paths }: AIChatProps) {
         },
         body: JSON.stringify({
           message: userMessage,
+          conversationHistory: conversationHistory,
           context: {
             language: 'general',
             level: 'beginner',
@@ -100,39 +157,20 @@ export default function AIChat({ paths }: AIChatProps) {
       const data = await response.json()
       console.log('API Response data:', data)
       
-      if (data.error) {
-        console.error('API returned error:', data.error)
-        // Return fallback response if API fails
-        return {
-          response: data.fallback || "I'm having trouble connecting to my AI services right now, but I can still help you! What would you like to learn? I can help with web development, mobile apps, data science, AI, game development, and more. Just tell me your goal! 🚀",
-          recommendation: {
-            pathSlug: 'frontend-development',
-            pathTitle: 'Frontend Development',
-            pathDescription: 'Master the art of creating beautiful, interactive user interfaces',
-            languages: ['html', 'css', 'javascript']
-          }
+              if (data.error) {
+          console.error('API returned error:', data.error)
+          throw new Error(data.error || 'API returned an error')
         }
-      }
 
       console.log('Returning AI response:', data.response)
       return {
         response: data.response,
         recommendation: data.recommendation
       }
-    } catch (error) {
-      console.error('AI Chat Error:', error)
-      
-      // Return a helpful fallback message
-      return {
-        response: "I'm having trouble connecting to my AI services right now, but I'm still here to help! I can assist you with:\n\n• Programming concepts and explanations\n• Code debugging and problem-solving\n• Learning path recommendations\n• Best practices and tips\n\nWhat would you like to learn about? Just ask me anything related to programming! 🚀",
-        recommendation: {
-          pathSlug: 'frontend-development',
-          pathTitle: 'Frontend Development',
-          pathDescription: 'Master the art of creating beautiful, interactive user interfaces',
-          languages: ['html', 'css', 'javascript']
-        }
+          } catch (error) {
+        console.error('AI Chat Error:', error)
+        throw error // Re-throw to let handleSubmit handle it
       }
-    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -155,16 +193,31 @@ export default function AIChat({ paths }: AIChatProps) {
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: aiResponse.response || "I'm sorry, I couldn't generate a response right now.",
+        content: aiResponse.response,
         timestamp: new Date(),
         recommendation: aiResponse.recommendation
       }
       setMessages(prev => [...prev, aiMessage])
     } catch (error) {
+      console.error('Error in handleSubmit:', error)
+      
+      // Show specific error messages based on the error type
+      let errorContent = "Sorry, I'm having trouble generating a response right now. Please try again in a moment."
+      
+      if (error instanceof Error) {
+        if (error.message.includes('Failed to get AI response')) {
+          errorContent = "I'm having trouble connecting to my AI services. Please check your internet connection and try again."
+        } else if (error.message.includes('API returned an error')) {
+          errorContent = "There was an issue with the AI service. Please try again in a few moments."
+        } else if (error.message.includes('OpenAI API key')) {
+          errorContent = "AI service configuration issue. Please contact support."
+        }
+      }
+      
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: "Sorry, I'm having trouble generating a response right now. Please try again in a moment.",
+        content: errorContent,
         timestamp: new Date()
       }
       setMessages(prev => [...prev, errorMessage])
