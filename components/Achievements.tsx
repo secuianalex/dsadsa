@@ -3,12 +3,10 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { 
-  achievements, 
+  ACHIEVEMENTS, 
   checkAchievements, 
   getAchievementProgress, 
-  getAchievementsByCategory, 
-  calculateTotalPoints, 
-  getUserLevel 
+  calculateUserLevel 
 } from '@/lib/achievements'
 
 interface AchievementsProps {
@@ -63,8 +61,14 @@ export default function Achievements({ isVisible, onClose }: AchievementsProps) 
 
       setUserProgress(mockProgress)
 
-      // Check for new achievements
-      const unlocked = checkAchievements(mockProgress)
+            // Check for new achievements  
+      const progressForAchievements = {
+        completedConcepts: mockProgress.achievements,
+        exercisesCompleted: mockProgress.lessonsCompleted,
+        totalTimeSpent: mockProgress.timeSpent,
+        streakDays: mockProgress.streakDays
+      }
+      const unlocked = checkAchievements(progressForAchievements, 0, [])
       if (unlocked.length > 0) {
         setNewAchievements(unlocked)
       }
@@ -104,7 +108,7 @@ export default function Achievements({ isVisible, onClose }: AchievementsProps) 
     }
   }
 
-  const filteredAchievements = achievements.filter(achievement => {
+  const filteredAchievements = ACHIEVEMENTS.filter(achievement => {
     if (selectedCategory !== 'all' && achievement.category !== selectedCategory) {
       return false
     }
@@ -114,8 +118,22 @@ export default function Achievements({ isVisible, onClose }: AchievementsProps) 
     return true
   })
 
-  const userLevel = getUserLevel(userProgress.totalPoints)
-  const totalPoints = calculateTotalPoints(userProgress.achievements)
+  const userLevelString = calculateUserLevel(userProgress.totalPoints)
+  const totalPoints = userProgress.totalPoints
+  
+  // Create a level object for display
+  const userLevel = {
+    level: userLevelString,
+    title: userLevelString.charAt(0).toUpperCase() + userLevelString.slice(1),
+    nextLevelPoints: userLevelString === 'bronze' ? 50 : 
+                    userLevelString === 'silver' ? 200 : 
+                    userLevelString === 'gold' ? 500 : 
+                    userLevelString === 'platinum' ? 1000 : 2000,
+    progress: userLevelString === 'bronze' ? (totalPoints / 50) * 100 :
+              userLevelString === 'silver' ? ((totalPoints - 50) / 150) * 100 :
+              userLevelString === 'gold' ? ((totalPoints - 200) / 300) * 100 :
+              userLevelString === 'platinum' ? ((totalPoints - 500) / 500) * 100 : 100
+  }
 
   if (!isVisible) return null
 
@@ -214,7 +232,7 @@ export default function Achievements({ isVisible, onClose }: AchievementsProps) 
 
           {/* Stats */}
           <div className="ml-auto text-sm text-gray-600">
-            {userProgress.achievements.length} / {achievements.length} unlocked
+            {userProgress.achievements.length} / {ACHIEVEMENTS.length} unlocked
           </div>
         </div>
       </div>
@@ -223,7 +241,13 @@ export default function Achievements({ isVisible, onClose }: AchievementsProps) 
       <div className="p-4 max-h-96 overflow-y-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredAchievements.map((achievement) => {
-            const progress = getAchievementProgress(achievement, userProgress)
+            const progressForAchievement = {
+              completedConcepts: userProgress.achievements,
+              exercisesCompleted: userProgress.lessonsCompleted,
+              totalTimeSpent: userProgress.timeSpent,
+              streakDays: userProgress.streakDays
+            }
+            const progress = getAchievementProgress(achievement, progressForAchievement, 0)
             const isUnlocked = userProgress.achievements.includes(achievement.id)
             const isNew = newAchievements.some(a => a.id === achievement.id)
 

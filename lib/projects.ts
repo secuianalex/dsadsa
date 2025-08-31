@@ -25,7 +25,7 @@ export interface ProjectSubmission {
   score?: number
 }
 
-export const PROJECTS: Record<string, Project[]> = {
+export const PROJECTS: Record<string, Record<string, Project[]>> = {
   javascript: {
     beginner: [
       {

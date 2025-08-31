@@ -30,9 +30,15 @@ export default async function LanguageLevelPage({
     notFound()
   }
 
+  // Ensure description is a string
+  const languageWithDescription = {
+    ...language,
+    description: language.description || `Learn ${language.name} programming`
+  }
+
   return (
     <LevelLearningPage 
-      language={language} 
+      language={languageWithDescription} 
       level={level as 'beginner' | 'intermediate' | 'advanced'} 
     />
   )

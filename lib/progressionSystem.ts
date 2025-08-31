@@ -356,7 +356,7 @@ export const LEARNING_PATHS: { [language: string]: { [level: string]: LearningPa
       ],
       graduationRequirements: {
         conceptsCompleted: 6,
-        exercisesRequired: 19,
+        exercisesCompleted: 19,
         projectCompleted: true,
         minimumScore: 75,
         totalTimeSpent: 285, // 4.75 hours

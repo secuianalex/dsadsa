@@ -395,10 +395,10 @@ export function getCollaborationStats(userId: string, groups: StudyGroup[]): {
   const userGroups = groups.filter(g => g.members.some(m => m.userId === userId))
   const userProjects = userGroups.flatMap(g => g.projects.filter(p => p.collaborators.includes(userId)))
   const userReviews = userProjects.flatMap(p => p.reviews.filter(r => r.reviewerId === userId))
-  const userPosts = userGroups.flatMap(g => 
-    g.discussions.filter(d => d.authorId === userId).length +
-    g.discussions.flatMap(d => d.replies.filter(r => r.authorId === userId)).length
-  )
+  const userPosts = userGroups.reduce((total, g) => 
+    total + g.discussions.filter(d => d.authorId === userId).length +
+    g.discussions.reduce((sum, d) => sum + d.replies.filter(r => r.authorId === userId).length, 0)
+  , 0)
   
   const averageRating = userReviews.length > 0 
     ? userReviews.reduce((sum, r) => sum + r.rating, 0) / userReviews.length 

@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     // Check if user wants to complete an exercise
     if (message.toLowerCase().includes('exercise complete') || message.toLowerCase().includes('practice done')) {
-      const updatedProgress = markExerciseCompleted(progress)
+      const updatedProgress = markExerciseCompleted(progress, 'general-exercise')
       metadata.exerciseCompleted = true
     }
 

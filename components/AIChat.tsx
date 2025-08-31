@@ -136,7 +136,7 @@ export default function AIChat({ paths }: AIChatProps) {
       return {
         recommendedPath: 'game-development',
         pathTitle: 'Game Development',
-        description: 'Create 2D and 3D games for multiple platforms',
+        pathDescription: 'Create 2D and 3D games for multiple platforms',
         languages: ['csharp', 'cpp', 'javascript', 'python', 'unity', 'unreal-engine'],
         response: `Awesome! I recommend the **Game Development** learning path! 🎮\n\nThis path will teach you to create interactive games and experiences:\n\n**Game Engines:**\n• Unity (C#) - Perfect for beginners\n• Unreal Engine (C++) - Professional 3D games\n• Godot - Open-source alternative\n\n**Core Skills:**\n• Game programming fundamentals\n• 3D modeling and animation\n• Game physics and mathematics\n• User interface design\n\n**Perfect for:** Creating games, interactive experiences, simulations, and educational content.\n\n**Estimated time:** 6-12 months for basics, 12-24 months for advanced games\n\nReady to bring your game ideas to life?`
       }

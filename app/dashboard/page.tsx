@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { useUserPreferences } from '@/hooks/useUserPreferences'
 import FavoriteLanguages from '@/components/FavoriteLanguages'
 import Achievements from '@/components/Achievements'
-import { getUserLevel, calculateTotalPoints } from '@/lib/achievements'
+import { calculateUserLevel } from '@/lib/achievements'
 
 interface DashboardStats {
   lessonsCompleted: number
@@ -94,8 +94,22 @@ export default function Dashboard() {
     }
   }
 
-  const userLevel = getUserLevel(stats.totalPoints)
-  const totalPoints = calculateTotalPoints(stats.achievements)
+  const userLevelString = calculateUserLevel(stats.totalPoints)
+  const totalPoints = stats.totalPoints
+  
+  // Create a level object for display
+  const userLevel = {
+    level: userLevelString,
+    title: userLevelString.charAt(0).toUpperCase() + userLevelString.slice(1),
+    nextLevelPoints: userLevelString === 'bronze' ? 50 : 
+                    userLevelString === 'silver' ? 200 : 
+                    userLevelString === 'gold' ? 500 : 
+                    userLevelString === 'platinum' ? 1000 : 2000,
+    progress: userLevelString === 'bronze' ? (totalPoints / 50) * 100 :
+              userLevelString === 'silver' ? ((totalPoints - 50) / 150) * 100 :
+              userLevelString === 'gold' ? ((totalPoints - 200) / 300) * 100 :
+              userLevelString === 'platinum' ? ((totalPoints - 500) / 500) * 100 : 100
+  }
 
   const getLanguageIcon = (slug: string) => {
     const icons: { [key: string]: string } = {

@@ -80,9 +80,9 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
      const isTestingLanguage = ['testing-fundamentals', 'manual-testing', 'automation-testing'].includes(lang)
      
      if (isTestingLanguage) {
-       return `Welcome! I'm Dev, your AI testing tutor! 🧪\n\nI'll guide you through your testing journey step by step. Before we begin, I'd like to understand your background so I can teach you most effectively.\n\nLet's start with a few questions:\n\n1. Have you ever done any software testing before?\n2. What's your experience with programming or software development?\n3. What do you hope to achieve by learning testing?\n\nDon't worry if you're completely new to this - I'll start from the very beginning and build up your knowledge systematically!\n\n**Just answer each question naturally, and I'll create a personalized learning plan just for you!**`
+       return `Welcome! I'm Dev, your AI testing tutor! [TEST]\n\nI'll guide you through your testing journey step by step. Before we begin, I'd like to understand your background so I can teach you most effectively.\n\nLet's start with a few questions:\n\n1. Have you ever done any software testing before?\n2. What's your experience with programming or software development?\n3. What do you hope to achieve by learning testing?\n\nDon't worry if you're completely new to this - I'll start from the very beginning and build up your knowledge systematically!\n\n**Just answer each question naturally, and I'll create a personalized learning plan just for you!**`
      } else {
-       return `Welcome! I'm Dev, your AI programming tutor! 🚀\n\nI'll guide you through your programming journey step by step. Before we begin, I'd like to understand your background so I can teach you most effectively.\n\nLet's start with a few questions:\n\n1. Have you ever written code before?\n2. What programming languages (if any) are you familiar with?\n3. What do you want to build or accomplish with programming?\n\nDon't worry if you're completely new to this - I'll start from the very beginning and build up your knowledge systematically!\n\n**Just answer each question naturally, and I'll create a personalized learning plan just for you!**`
+       return `Welcome! I'm Dev, your AI programming tutor! [ROCKET]\n\nI'll guide you through your programming journey step by step. Before we begin, I'd like to understand your background so I can teach you most effectively.\n\nLet's start with a few questions:\n\n1. Have you ever written code before?\n2. What programming languages (if any) are you familiar with?\n3. What do you want to build or accomplish with programming?\n\nDon't worry if you're completely new to this - I'll start from the very beginning and build up your knowledge systematically!\n\n**Just answer each question naturally, and I'll create a personalized learning plan just for you!**`
      }
    }
 
@@ -145,7 +145,8 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
     userPreferences: {
       learningStyle: 'hands-on',
       pace: 'normal',
-      difficulty: 'adaptive'
+      showExamples: true,
+      showExercises: true
     }
   })
 
@@ -167,8 +168,15 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
   const [exerciseHistory, setExerciseHistory] = useState<ExerciseResult[]>([])
 
   // Progression system state
-  const [progressionStatus, setProgressionStatus] = useState(() => 
-    calculateProgressionStatus(selectedLanguage, selectedLevel, userProgress)
+    const [progressionStatus, setProgressionStatus] = useState(() =>
+    calculateProgressionStatus(
+      selectedLanguage, 
+      selectedLevel, 
+      userProgress.conceptsCompleted || [],
+      userProgress.exercisesCompleted.length || 0,
+      userProgress.completedProjects.length > 0 || false,
+      userProgress.totalTimeSpent || 0
+    )
   )
 
   // Code execution state
@@ -291,8 +299,8 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
        // All languages now use the proactive teaching system
        let devResponse: string
        
-       // Use the proactive teaching system for all languages
-       if (teachingPhase === 'assessment' || teachingPhase === 'learning' || teachingPhase === 'practice') {
+               // Use the proactive teaching system for all languages
+        if (['assessment', 'learning', 'practice'].includes(teachingPhase)) {
          // The proactive teaching system handles all responses
          return
        } else {
@@ -336,13 +344,19 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
 
          // Check for new achievements
          if (data.userProgress) {
-           const newAchievements = checkAchievements(data.userProgress)
+                       const progressForAchievements = {
+              completedConcepts: data.userProgress.conceptsCompleted || [],
+              exercisesCompleted: data.userProgress.exercisesCompleted.length || 0,
+              totalTimeSpent: data.userProgress.totalTimeSpent || 0,
+              streakDays: data.userProgress.streakDays || 0
+            }
+            const newAchievements = checkAchievements(progressForAchievements, 0, [])
            if (newAchievements.length > 0) {
              setNewAchievement(newAchievements[0])
              setShowAchievement(true)
              setAchievements(prev => [...prev, ...newAchievements])
            }
-           setUserLevel(calculateUserLevel(data.userProgress))
+                       setUserLevel(1) // Default level, you might want to calculate this based on progress
          }
        }
 
@@ -387,7 +401,13 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
     setUserProgress(updatedProgress)
 
     // Check for achievements
-    const newAchievements = checkAchievements(updatedProgress)
+    const progressForAchievements = {
+      completedConcepts: updatedProgress.conceptsCompleted || [],
+      exercisesCompleted: updatedProgress.exercisesCompleted.length || 0,
+      totalTimeSpent: updatedProgress.totalTimeSpent || 0,
+      streakDays: updatedProgress.streakDays || 0
+    }
+    const newAchievements = checkAchievements(progressForAchievements, 0, [])
     if (newAchievements.length > 0) {
       setNewAchievement(newAchievements[0])
       setShowAchievement(true)
@@ -420,13 +440,19 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
     // Update progress
     const updatedProgress = {
       ...userProgress,
-      exercisesCompleted: userProgress.exercisesCompleted + 1,
-      totalExercisesCompleted: userProgress.totalExercisesCompleted + 1
+      exercisesCompleted: [...userProgress.exercisesCompleted, 'exercise-' + Date.now()],
+      totalProjectsCompleted: userProgress.totalProjectsCompleted + 1
     }
     setUserProgress(updatedProgress)
 
     // Check for achievements
-    const newAchievements = checkAchievements(updatedProgress)
+    const progressForAchievements = {
+      completedConcepts: updatedProgress.conceptsCompleted || [],
+      exercisesCompleted: updatedProgress.exercisesCompleted.length || 0,
+      totalTimeSpent: updatedProgress.totalTimeSpent || 0,
+      streakDays: updatedProgress.streakDays || 0
+    }
+    const newAchievements = checkAchievements(progressForAchievements, 0, [])
     if (newAchievements.length > 0) {
       setNewAchievement(newAchievements[0])
       setShowAchievement(true)
@@ -588,7 +614,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
       plan += `• Best practices and real-world projects\n`
     }
     
-         plan += `\nReady to start your first lesson? I'll guide you through everything step by step! 🚀`
+         plan += `\nReady to start your first lesson? I'll guide you through everything step by step! [ROCKET]`
      
      return plan
    }
@@ -615,7 +641,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
       const lessons = {
         'testing-fundamentals': [
           {
-            concept: `🧪 **Lesson 1: What is Software Testing?**\n\nSoftware testing is the process of evaluating a software application to ensure it meets specified requirements and works correctly.\n\n**Why Testing Matters:**\n• Prevents bugs from reaching users\n• Saves time and money\n• Improves software quality\n• Builds user confidence\n\n**Key Terms:**\n• **Bug/Defect**: A flaw in the software\n• **Test Case**: A set of conditions to verify functionality\n• **Test Plan**: Document describing testing approach\n\nThink of testing like proofreading a book - you're checking for errors before it goes to readers!`,
+            concept: `[TEST] **Lesson 1: What is Software Testing?**\n\nSoftware testing is the process of evaluating a software application to ensure it meets specified requirements and works correctly.\n\n**Why Testing Matters:**\n• Prevents bugs from reaching users\n• Saves time and money\n• Improves software quality\n• Builds user confidence\n\n**Key Terms:**\n• **Bug/Defect**: A flaw in the software\n• **Test Case**: A set of conditions to verify functionality\n• **Test Plan**: Document describing testing approach\n\nThink of testing like proofreading a book - you're checking for errors before it goes to readers!`,
             exercise: {
               question: "What would you test first if you were checking a login form?",
               answer: "username and password fields",
@@ -623,7 +649,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
             }
           },
           {
-            concept: `📋 **Lesson 2: Testing Principles**\n\nThe 7 fundamental testing principles guide all testing activities:\n\n**1. Testing Shows Presence of Defects**\nTesting can show that defects are present, but cannot prove that there are no defects.\n\n**2. Exhaustive Testing is Impossible**\nTesting everything is not feasible due to time and resource constraints.\n\n**3. Early Testing Saves Time and Money**\nThe earlier defects are found, the cheaper they are to fix.\n\n**4. Defects Cluster Together**\nA small number of modules usually contain most of the defects.\n\n**5. Beware of the Pesticide Paradox**\nRunning the same tests repeatedly will eventually stop finding new defects.\n\n**6. Testing is Context Dependent**\nDifferent contexts require different testing approaches.\n\n**7. Absence-of-Errors is a Fallacy**\nFinding and fixing defects doesn't help if the system is unusable.`,
+            concept: `[LIST] **Lesson 2: Testing Principles**\n\nThe 7 fundamental testing principles guide all testing activities:\n\n**1. Testing Shows Presence of Defects**\nTesting can show that defects are present, but cannot prove that there are no defects.\n\n**2. Exhaustive Testing is Impossible**\nTesting everything is not feasible due to time and resource constraints.\n\n**3. Early Testing Saves Time and Money**\nThe earlier defects are found, the cheaper they are to fix.\n\n**4. Defects Cluster Together**\nA small number of modules usually contain most of the defects.\n\n**5. Beware of the Pesticide Paradox**\nRunning the same tests repeatedly will eventually stop finding new defects.\n\n**6. Testing is Context Dependent**\nDifferent contexts require different testing approaches.\n\n**7. Absence-of-Errors is a Fallacy**\nFinding and fixing defects doesn't help if the system is unusable.`,
             exercise: {
               question: "Which testing principle states that finding and fixing defects doesn't help if the system is unusable?",
               answer: "absence of errors fallacy",
@@ -633,7 +659,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
         ],
         'manual-testing': [
           {
-            concept: `👨‍💻 **Lesson 1: Manual Testing Process**\n\nManual testing involves human testers executing test cases without automation tools.\n\n**The Testing Process:**\n1. **Test Planning** - Define scope and approach\n2. **Test Design** - Create test cases\n3. **Test Execution** - Run the tests\n4. **Bug Reporting** - Document issues found\n5. **Test Closure** - Summarize results\n\n**Manual Testing Advantages:**\n• Human intuition and creativity\n• Cost-effective for small projects\n• No tool setup required\n• Can test user experience\n\n**When to Use Manual Testing:**\n• Exploratory testing\n• Usability testing\n• Ad-hoc testing\n• Small projects`,
+            concept: `[DEV] **Lesson 1: Manual Testing Process**\n\nManual testing involves human testers executing test cases without automation tools.\n\n**The Testing Process:**\n1. **Test Planning** - Define scope and approach\n2. **Test Design** - Create test cases\n3. **Test Execution** - Run the tests\n4. **Bug Reporting** - Document issues found\n5. **Test Closure** - Summarize results\n\n**Manual Testing Advantages:**\n• Human intuition and creativity\n• Cost-effective for small projects\n• No tool setup required\n• Can test user experience\n\n**When to Use Manual Testing:**\n• Exploratory testing\n• Usability testing\n• Ad-hoc testing\n• Small projects`,
             exercise: {
               question: "List the 5 steps of the manual testing process in order.",
               answer: "test planning, test design, test execution, bug reporting, test closure",
@@ -641,7 +667,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
             }
           },
           {
-            concept: `📝 **Lesson 2: Test Case Design**\n\nTest case design is the process of creating effective test scenarios.\n\n**Test Case Components:**\n• **Test Case ID**: Unique identifier\n• **Test Description**: What is being tested\n• **Preconditions**: What must be true before testing\n• **Test Steps**: Detailed steps to execute\n• **Expected Results**: What should happen\n• **Actual Results**: What actually happened\n• **Status**: Pass/Fail/Blocked\n\n**Test Case Design Techniques:**\n• **Equivalence Partitioning**: Group similar inputs\n• **Boundary Value Analysis**: Test edge cases\n• **Decision Table Testing**: Test combinations of conditions\n• **State Transition Testing**: Test system states\n\n**Example Test Case:**\n**ID**: TC001\n**Description**: Verify login with valid credentials\n**Steps**: 1. Enter valid username 2. Enter valid password 3. Click login\n**Expected**: User is logged in successfully`,
+            concept: `[NOTE] **Lesson 2: Test Case Design**\n\nTest case design is the process of creating effective test scenarios.\n\n**Test Case Components:**\n• **Test Case ID**: Unique identifier\n• **Test Description**: What is being tested\n• **Preconditions**: What must be true before testing\n• **Test Steps**: Detailed steps to execute\n• **Expected Results**: What should happen\n• **Actual Results**: What actually happened\n• **Status**: Pass/Fail/Blocked\n\n**Test Case Design Techniques:**\n• **Equivalence Partitioning**: Group similar inputs\n• **Boundary Value Analysis**: Test edge cases\n• **Decision Table Testing**: Test combinations of conditions\n• **State Transition Testing**: Test system states\n\n**Example Test Case:**\n**ID**: TC001\n**Description**: Verify login with valid credentials\n**Steps**: 1. Enter valid username 2. Enter valid password 3. Click login\n**Expected**: User is logged in successfully`,
             exercise: {
               question: "What are the main components of a test case?",
               answer: "test case id, description, preconditions, steps, expected results, actual results, status",
@@ -651,7 +677,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
         ],
         'automation-testing': [
           {
-            concept: `🤖 **Lesson 1: Introduction to Test Automation**\n\nTest automation uses tools and scripts to execute tests automatically, reducing manual effort.\n\n**Benefits of Automation:**\n• Faster execution\n• Consistent results\n• Reusable test scripts\n• 24/7 testing capability\n• Cost-effective for regression testing\n\n**When to Automate:**\n• Repetitive tests\n• Regression testing\n• Data-driven tests\n• Cross-browser testing\n• Performance testing\n\n**Popular Automation Tools:**\n• Selenium WebDriver (Web testing)\n• Postman (API testing)\n• Appium (Mobile testing)\n• JUnit/TestNG (Unit testing)\n\n**Automation Pyramid:**\n• Unit Tests (70%)\n• Integration Tests (20%)\n• UI Tests (10%)`,
+            concept: `[AUTO] **Lesson 1: Introduction to Test Automation**\n\nTest automation uses tools and scripts to execute tests automatically, reducing manual effort.\n\n**Benefits of Automation:**\n• Faster execution\n• Consistent results\n• Reusable test scripts\n• 24/7 testing capability\n• Cost-effective for regression testing\n\n**When to Automate:**\n• Repetitive tests\n• Regression testing\n• Data-driven tests\n• Cross-browser testing\n• Performance testing\n\n**Popular Automation Tools:**\n• Selenium WebDriver (Web testing)\n• Postman (API testing)\n• Appium (Mobile testing)\n• JUnit/TestNG (Unit testing)\n\n**Automation Pyramid:**\n• Unit Tests (70%)\n• Integration Tests (20%)\n• UI Tests (10%)`,
             exercise: {
               question: "What percentage of tests should be unit tests according to the automation pyramid?",
               answer: "70",
@@ -659,7 +685,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
             }
           },
           {
-            concept: `🔧 **Lesson 2: Selenium WebDriver Basics**\n\nSelenium WebDriver is the most popular web automation tool.\n\n**Key Concepts:**\n• **WebDriver**: Interface to control browsers\n• **Locators**: Ways to find elements on web pages\n• **Actions**: Interactions with web elements\n• **Waits**: Handling dynamic content\n\n**Common Locators:**\n• **ID**: `driver.findElement(By.id("username"))`\n• **Name**: `driver.findElement(By.name("password"))`\n• **XPath**: `driver.findElement(By.xpath("//button[@type='submit']"))`\n• **CSS Selector**: `driver.findElement(By.cssSelector(".login-btn"))`\n\n**Basic Actions:**\n• `click()`: Click on element\n• `sendKeys()`: Type text\n• `getText()`: Get element text\n• `clear()`: Clear input field\n\n**Example Code:**\n```java\nWebElement username = driver.findElement(By.id("username"));\nusername.sendKeys("testuser");\nWebElement password = driver.findElement(By.id("password"));\npassword.sendKeys("testpass");\nWebElement loginBtn = driver.findElement(By.id("login"));\nloginBtn.click();\n```\n
+            concept: `[TOOL] **Lesson 2: Selenium WebDriver Basics**\n\nSelenium WebDriver is the most popular web automation tool.\n\n**Key Concepts:**\n• **WebDriver**: Interface to control browsers\n• **Locators**: Ways to find elements on web pages\n• **Actions**: Interactions with web elements\n• **Waits**: Handling dynamic content\n\n**Common Locators:**\n• **ID**: \`driver.findElement(By.id("username"))\`\n• **Name**: \`driver.findElement(By.name("password"))\`\n• **XPath**: \`driver.findElement(By.xpath("//button[@type='submit']"))\`\n• **CSS Selector**: \`driver.findElement(By.cssSelector(".login-btn"))\`\n\n**Basic Actions:**\n• \`click()\`: Click on element\n• \`sendKeys()\`: Type text\n• \`getText()\`: Get element text\n• \`clear()\`: Clear input field\n\n**Example Code:**\n\`\`\`java\nWebElement username = driver.findElement(By.id("username"));\nusername.sendKeys("testuser");\nWebElement password = driver.findElement(By.id("password"));\npassword.sendKeys("testpass");\nWebElement loginBtn = driver.findElement(By.id("login"));\nloginBtn.click();\n\`\`\`\n`,
             exercise: {
               question: "What is the most common way to locate elements in Selenium WebDriver?",
               answer: "id",
@@ -676,7 +702,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
       const lessons = {
         'javascript': [
           {
-            concept: `🚀 **Lesson 1: Introduction to JavaScript**\n\nJavaScript is a versatile programming language that runs in web browsers and on servers.\n\n**What is JavaScript?**\n• A dynamic, interpreted programming language\n• Runs in web browsers (client-side)\n• Can run on servers (Node.js)\n• Used for web development, mobile apps, and more\n\n**Key Features:**\n• Dynamic typing\n• Object-oriented and functional programming\n• Event-driven programming\n• Rich ecosystem of libraries and frameworks\n\n**Your First JavaScript Program:**\n```javascript\nconsole.log("Hello, World!");\n```\n\nThis simple line outputs text to the console. It's the traditional first program in any language!`,
+            concept: `**Lesson 1: Introduction to JavaScript**\n\nJavaScript is a versatile programming language that runs in web browsers and on servers.\n\n**What is JavaScript?**\n• A dynamic, interpreted programming language\n• Runs in web browsers (client-side)\n• Can run on servers (Node.js)\n• Used for web development, mobile apps, and more\n\n**Key Features:**\n• Dynamic typing\n• Object-oriented and functional programming\n• Event-driven programming\n• Rich ecosystem of libraries and frameworks\n\n**Your First JavaScript Program:**\n\`\`\`javascript\nconsole.log("Hello, World!");\n\`\`\`\n\nThis simple line outputs text to the console. It's the traditional first program in any language!`,
             exercise: {
               question: "What does console.log() do in JavaScript?",
               answer: "outputs text to the console",
@@ -684,7 +710,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
             }
           },
           {
-            concept: `📝 **Lesson 2: Variables and Data Types**\n\nVariables are containers for storing data values.\n\n**Declaring Variables:**\n```javascript\nlet name = "John";           // String\nconst age = 25;             // Number\nlet isStudent = true;       // Boolean\nlet hobbies = ["coding", "reading"]; // Array\n```\n\n**Data Types in JavaScript:**\n• **String**: Text enclosed in quotes\n• **Number**: Integers and decimals\n• **Boolean**: true or false\n• **Array**: Ordered list of values\n• **Object**: Collection of key-value pairs\n• **Undefined**: Variable declared but not assigned\n• **Null**: Intentional absence of value\n\n**Variable Declaration Keywords:**\n• `let`: Block-scoped, can be reassigned\n• `const`: Block-scoped, cannot be reassigned\n• `var`: Function-scoped (older syntax)`,
+            concept: `**Lesson 2: Variables and Data Types**\n\nVariables are containers for storing data values.\n\n**Declaring Variables:**\n\`\`\`javascript\nlet name = "John";           // String\nconst age = 25;             // Number\nlet isStudent = true;       // Boolean\nlet hobbies = ["coding", "reading"]; // Array\n\`\`\`\n\n**Data Types in JavaScript:**\n• **String**: Text enclosed in quotes\n• **Number**: Integers and decimals\n• **Boolean**: true or false\n• **Array**: Ordered list of values\n• **Object**: Collection of key-value pairs\n• **Undefined**: Variable declared but not assigned\n• **Null**: Intentional absence of value\n\n**Variable Declaration Keywords:**\n• \`let\`: Block-scoped, can be reassigned\n• \`const\`: Block-scoped, cannot be reassigned\n• \`var\`: Function-scoped (older syntax)`,
             exercise: {
               question: "What keyword would you use to declare a variable that cannot be changed?",
               answer: "const",
@@ -694,7 +720,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
         ],
         'python': [
           {
-            concept: `🐍 **Lesson 1: Introduction to Python**\n\nPython is a high-level, interpreted programming language known for its simplicity and readability.\n\n**What is Python?**\n• A general-purpose programming language\n• Known for clean, readable syntax\n• Extensive standard library\n• Used in web development, data science, AI, and more\n\n**Key Features:**\n• Simple and readable syntax\n• Automatic memory management\n• Large standard library\n• Cross-platform compatibility\n\n**Your First Python Program:**\n```python\nprint("Hello, World!")\n```\n\nPython uses indentation to define code blocks, making it very readable!`,
+            concept: "[PYTHON] **Lesson 1: Introduction to Python**\n\nPython is a high-level, interpreted programming language known for its simplicity and readability.\n\n**What is Python?**\n• A general-purpose programming language\n• Known for clean, readable syntax\n• Extensive standard library\n• Used in web development, data science, AI, and more\n\n**Key Features:**\n• Simple and readable syntax\n• Automatic memory management\n• Large standard library\n• Cross-platform compatibility\n\n**Your First Python Program:**\n```python\nprint(\"Hello, World!\")\n```\n\nPython uses indentation to define code blocks, making it very readable!",
             exercise: {
               question: "What function is used to output text in Python?",
               answer: "print",
@@ -702,7 +728,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
             }
           },
           {
-            concept: `📊 **Lesson 2: Variables and Data Types**\n\nPython has several built-in data types for different kinds of data.\n\n**Basic Data Types:**\n```python\nname = "Alice"              # String\nage = 30                   # Integer\nheight = 5.7               # Float\nis_student = True          # Boolean\nhobbies = ["coding", "music"] # List\n```\n\n**Python Data Types:**\n• **str**: Text strings\n• **int**: Whole numbers\n• **float**: Decimal numbers\n• **bool**: True or False\n• **list**: Ordered, changeable collection\n• **tuple**: Ordered, unchangeable collection\n• **dict**: Key-value pairs\n• **set**: Unordered, unique elements\n\n**Variable Naming Rules:**\n• Use letters, numbers, and underscores\n• Cannot start with a number\n• Case-sensitive\n• Use descriptive names`,
+            concept: "[CHART] **Lesson 2: Variables and Data Types**\n\nPython has several built-in data types for different kinds of data.\n\n**Basic Data Types:**\n```python\nname = \"Alice\"              # String\nage = 30                   # Integer\nheight = 5.7               # Float\nis_student = True          # Boolean\nhobbies = [\"coding\", \"music\"] # List\n```\n\n**Python Data Types:**\n• **str**: Text strings\n• **int**: Whole numbers\n• **float**: Decimal numbers\n• **bool**: True or False\n• **list**: Ordered, changeable collection\n• **tuple**: Ordered, unchangeable collection\n• **dict**: Key-value pairs\n• **set**: Unordered, unique elements\n\n**Variable Naming Rules:**\n• Use letters, numbers, and underscores\n• Cannot start with a number\n• Case-sensitive\n• Use descriptive names",
             exercise: {
               question: "What data type would you use to store someone's name in Python?",
               answer: "string",
@@ -712,7 +738,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
         ],
         'html': [
           {
-            concept: `🌐 **Lesson 1: Introduction to HTML**\n\nHTML (HyperText Markup Language) is the standard markup language for creating web pages.\n\n**What is HTML?**\n• A markup language, not a programming language\n• Defines the structure and content of web pages\n• Uses tags to mark up content\n• Works with CSS and JavaScript\n\n**Basic HTML Structure:**\n```html\n<!DOCTYPE html>\n<html>\n<head>\n    <title>My First Page</title>\n</head>\n<body>\n    <h1>Hello, World!</h1>\n    <p>This is my first HTML page.</p>\n</body>\n</html>\n```\n\n**Key Concepts:**\n• HTML documents have a tree-like structure\n• Tags come in pairs: opening and closing\n• Some tags are self-closing\n• HTML is semantic - tags have meaning`,
+            concept: "[WEB] **Lesson 1: Introduction to HTML**\n\nHTML (HyperText Markup Language) is the standard markup language for creating web pages.\n\n**What is HTML?**\n• A markup language, not a programming language\n• Defines the structure and content of web pages\n• Uses tags to mark up content\n• Works with CSS and JavaScript\n\n**Basic HTML Structure:**\n```html\n<!DOCTYPE html>\n<html>\n<head>\n    <title>My First Page</title>\n</head>\n<body>\n    <h1>Hello, World!</h1>\n    <p>This is my first HTML page.</p>\n</body>\n</html>\n```\n\n**Key Concepts:**\n• HTML documents have a tree-like structure\n• Tags come in pairs: opening and closing\n• Some tags are self-closing\n• HTML is semantic - tags have meaning",
             exercise: {
               question: "What tag is used to create the main heading in HTML?",
               answer: "h1",
@@ -720,7 +746,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
             }
           },
           {
-            concept: `📝 **Lesson 2: Common HTML Elements**\n\nHTML provides many elements for structuring content.\n\n**Text Elements:**\n```html\n<h1>Main Heading</h1>\n<h2>Subheading</h2>\n<p>This is a paragraph.</p>\n<strong>Bold text</strong>\n<em>Italic text</em>\n```\n\n**List Elements:**\n```html\n<ul>\n    <li>Unordered list item</li>\n    <li>Another item</li>\n</ul>\n\n<ol>\n    <li>Ordered list item</li>\n    <li>Another item</li>\n</ol>\n```\n\n**Link and Image:**\n```html\n<a href="https://example.com">Click here</a>\n<img src="image.jpg" alt="Description">\n```\n\n**Container Elements:**\n• `<div>`: Block-level container\n• `<span>`: Inline container\n• `<section>`: Thematic grouping\n• `<article>`: Self-contained content`,
+            concept: "[NOTE] **Lesson 2: Common HTML Elements**\n\nHTML provides many elements for structuring content.\n\n**Text Elements:**\n```html\n<h1>Main Heading</h1>\n<h2>Subheading</h2>\n<p>This is a paragraph.</p>\n<strong>Bold text</strong>\n<em>Italic text</em>\n```\n\n**List Elements:**\n```html\n<ul>\n    <li>Unordered list item</li>\n    <li>Another item</li>\n</ul>\n\n<ol>\n    <li>Ordered list item</li>\n    <li>Another item</li>\n</ol>\n```\n\n**Link and Image:**\n```html\n<a href=\"https://example.com\">Click here</a>\n<img src=\"image.jpg\" alt=\"Description\">\n```\n\n**Container Elements:**\n• `<div>`: Block-level container\n• `<span>`: Inline container\n• `<section>`: Thematic grouping\n• `<article>`: Self-contained content",
             exercise: {
               question: "What tag is used to create a hyperlink in HTML?",
               answer: "a",
@@ -730,7 +756,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
         ],
         'css': [
           {
-            concept: `🎨 **Lesson 1: Introduction to CSS**\n\nCSS (Cascading Style Sheets) is used to style and layout web pages.\n\n**What is CSS?**\n• A style sheet language\n• Controls the appearance of HTML elements\n• Separates content from presentation\n• Works with HTML and JavaScript\n\n**Basic CSS Syntax:**\n```css\nselector {\n    property: value;\n}\n\nh1 {\n    color: blue;\n    font-size: 24px;\n}\n```\n\n**CSS Selectors:**\n• **Element selector**: `h1`, `p`, `div`\n• **Class selector**: `.classname`\n• **ID selector**: `#idname`\n• **Descendant selector**: `div p`\n\n**Common Properties:**\n• `color`: Text color\n• `background-color`: Background color\n• `font-size`: Text size\n• `margin`: Outer spacing\n• `padding`: Inner spacing`,
+            concept: "[ART] **Lesson 1: Introduction to CSS**\n\nCSS (Cascading Style Sheets) is used to style and layout web pages.\n\n**What is CSS?**\n• A style sheet language\n• Controls the appearance of HTML elements\n• Separates content from presentation\n• Works with HTML and JavaScript\n\n**Basic CSS Syntax:**\n```css\nselector {\n    property: value;\n}\n\nh1 {\n    color: blue;\n    font-size: 24px;\n}\n```\n\n**CSS Selectors:**\n• **Element selector**: `h1`, `p`, `div`\n• **Class selector**: `.classname`\n• **ID selector**: `#idname`\n• **Descendant selector**: `div p`\n\n**Common Properties:**\n• `color`: Text color\n• `background-color`: Background color\n• `font-size`: Text size\n• `margin`: Outer spacing\n• `padding`: Inner spacing",
             exercise: {
               question: "What CSS property controls the text color?",
               answer: "color",
@@ -738,7 +764,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
             }
           },
           {
-            concept: `📐 **Lesson 2: CSS Box Model**\n\nThe CSS box model describes how elements are laid out.\n\n**Box Model Components:**\n```css\ndiv {\n    width: 200px;\n    height: 100px;\n    padding: 20px;\n    border: 2px solid black;\n    margin: 10px;\n}\n```\n\n**Box Model Parts:**\n• **Content**: The actual content (text, images)\n• **Padding**: Space between content and border\n• **Border**: Line around the element\n• **Margin**: Space outside the border\n\n**Box Sizing:**\n• `box-sizing: content-box` (default)\n• `box-sizing: border-box` (includes padding and border)\n\n**Display Properties:**\n• `display: block` - Takes full width\n• `display: inline` - Takes only needed width\n• `display: inline-block` - Combination of both\n• `display: flex` - Flexible box layout`,
+            concept: "[RULER] **Lesson 2: CSS Box Model**\n\nThe CSS box model describes how elements are laid out.\n\n**Box Model Components:**\n```css\ndiv {\n    width: 200px;\n    height: 100px;\n    padding: 20px;\n    border: 2px solid black;\n    margin: 10px;\n}\n```\n\n**Box Model Parts:**\n• **Content**: The actual content (text, images)\n• **Padding**: Space between content and border\n• **Border**: Line around the element\n• **Margin**: Space outside the border\n\n**Box Sizing:**\n• `box-sizing: content-box` (default)\n• `box-sizing: border-box` (includes padding and border)\n\n**Display Properties:**\n• `display: block` - Takes full width\n• `display: inline` - Takes only needed width\n• `display: inline-block` - Combination of both\n• `display: flex` - Flexible box layout",
             exercise: {
               question: "What CSS property controls the space between content and border?",
               answer: "padding",
@@ -756,7 +782,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
       
       // Default lesson for other languages
       return {
-        concept: `🚀 **Lesson 1: Getting Started with ${language}**\n\nWelcome to your first programming lesson! Let's start with the basics.\n\n**What is ${language}?**\n${language} is a programming language used for various applications.\n\n**Key Concepts We'll Cover:**\n• Variables and data types\n• Functions and control flow\n• Best practices\n• Real-world applications\n\n**Your First Program:**\nLet's start with a simple "Hello World" program to understand the basics.\n\nReady to write your first line of code?`,
+        concept: `[ROCKET] **Lesson 1: Getting Started with ${language}**\n\nWelcome to your first programming lesson! Let's start with the basics.\n\n**What is ${language}?**\n${language} is a programming language used for various applications.\n\n**Key Concepts We'll Cover:**\n• Variables and data types\n• Functions and control flow\n• Best practices\n• Real-world applications\n\n**Your First Program:**\nLet's start with a simple "Hello World" program to understand the basics.\n\nReady to write your first line of code?`,
         exercise: {
           question: "What is the purpose of a 'Hello World' program?",
           answer: "to verify the programming environment is set up correctly",
@@ -836,7 +862,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
       setLessonCompleted(false)
       
       const nextLesson = getLessonContent(selectedLanguage, selectedLevel, nextLessonIndex)
-      addDevMessage(`🚀 **Lesson ${nextLessonIndex + 1}**\n\n${nextLesson.concept}`)
+      addDevMessage(`[ROCKET] **Lesson ${nextLessonIndex + 1}**\n\n${nextLesson.concept}`)
     }
     
     const reviewCurrentLesson = async () => {
@@ -1121,13 +1147,13 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
                   onClick={() => setCurrentView('code-executor')}
                   className="px-3 py-1 text-xs bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded-full hover:bg-orange-200 dark:hover:bg-orange-800"
                 >
-                  🚀 Code Editor
+                  [ROCKET] Code Editor
                 </button>
                 <button
                   onClick={() => setCurrentView('progression')}
                   className="px-3 py-1 text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 rounded-full hover:bg-indigo-200 dark:hover:bg-indigo-800"
                 >
-                  📊 Progress
+                  [CHART] Progress
                 </button>
               </div>
             </div>
@@ -1139,47 +1165,54 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
             language={selectedLanguage}
             level={selectedLevel}
             onProjectSelect={handleProjectSelect}
-            onBack={handleBackToChat}
           />
         )}
 
         {currentView === 'project-workspace' && selectedProject && (
           <ProjectWorkspace
             project={selectedProject}
-            onComplete={handleProjectComplete}
-            onBack={handleBackToChat}
           />
         )}
 
         {currentView === 'achievements' && (
           <AchievementDisplay
-            achievements={achievements}
-            userLevel={userLevel}
-            onBack={handleBackToChat}
+            userProgress={{
+              completedConcepts: userProgress.conceptsCompleted || [],
+              exercisesCompleted: userProgress.exercisesCompleted.length || 0,
+              totalTimeSpent: userProgress.totalTimeSpent || 0,
+              streakDays: userProgress.streakDays || 0
+            }}
+            completedProjects={userProgress.completedProjects.length || 0}
+            unlockedAchievements={achievements}
+            certifications={[]}
+            totalPoints={userProgress.conceptsCompleted.length * 10 + userProgress.exercisesCompleted.length * 5 + userProgress.completedProjects.length * 20}
+            userLevel="bronze"
           />
         )}
 
         {currentView === 'study-groups' && (
           <StudyGroupBrowser
-            groups={studyGroups}
-            userGroups={userGroups}
-            onBack={handleBackToChat}
+            userLanguage={selectedLanguage}
+            userLevel={selectedLevel}
+            userInterests={[]}
           />
         )}
 
         {currentView === 'code-analysis' && (
           <CodeAnalyzer
+            code={codeValue}
             language={selectedLanguage}
-            onBack={handleBackToChat}
+            onAnalysisComplete={(analysis) => setCodeAnalysis(analysis)}
           />
         )}
 
         {currentView === 'exercise' && (
           <InteractiveExercise
+            concept="variables-and-data-types"
             language={selectedLanguage}
             level={selectedLevel}
             onComplete={handleExerciseComplete}
-            onBack={handleBackToChat}
+            onClose={handleBackToChat}
           />
         )}
 
@@ -1187,8 +1220,12 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
           <ProgressionDashboard
             language={selectedLanguage}
             level={selectedLevel}
-            progress={userProgress}
-            onBack={handleBackToChat}
+            completedConcepts={userProgress.conceptsCompleted || []}
+            exercisesCompleted={userProgress.exercisesCompleted.length || 0}
+            projectCompleted={userProgress.completedProjects.length > 0}
+            totalTimeSpent={userProgress.totalTimeSpent || 0}
+            onConceptSelect={(conceptId) => console.log('Concept selected:', conceptId)}
+            onGraduation={() => setCurrentView('graduation')}
           />
         )}
 
@@ -1196,17 +1233,21 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
           <GraduationCeremony
             language={selectedLanguage}
             level={selectedLevel}
-            progress={userProgress}
-            onBack={handleBackToChat}
+            finalScore={userProgress.conceptsCompleted.length * 10 + userProgress.exercisesCompleted.length * 5}
+            timeSpent={userProgress.totalTimeSpent || 0}
+            achievements={userProgress.achievements || []}
+            onComplete={() => console.log('Graduation completed')}
+            onContinue={() => setCurrentView('chat')}
           />
         )}
 
         {currentView === 'code-executor' && (
           <CodeExecutor
             language={selectedLanguage}
+            level={selectedLevel}
+            initialCode={codeValue}
             onExecutionComplete={handleExecutionComplete}
             onCodeChange={handleCodeChange}
-            onBack={handleBackToChat}
           />
         )}
       </div>

@@ -36,7 +36,7 @@ export default function InteractiveExercise({
     const newExercise = generateExercise(concept, language, level)
     if (newExercise) {
       setExercise(newExercise)
-      setUserCode(newExercise.content.starterCode || "")
+      setUserCode(newExercise.starterCode || "")
     }
 
     // Start timer
@@ -52,23 +52,23 @@ export default function InteractiveExercise({
 
     setIsRunning(true)
     try {
-      const exerciseResult = await executeCode(userCode, language, exercise.content.testCases)
+      const exerciseResult = await executeCode(userCode, language, exercise.testCases)
       setResult(exerciseResult)
       
-      if (exerciseResult.passed) {
+      if (exerciseResult.success) {
         onComplete(exerciseResult)
       }
     } catch (error) {
       console.error('Error running code:', error)
       setResult({
-        exerciseId: exercise.id,
-        userCode,
-        passed: false,
+        success: false,
         score: 0,
-        feedback: [`Error: ${error}`],
+        totalTests: 0,
+        passedTests: 0,
         testResults: [],
-        executionTime: 0,
-        timestamp: new Date()
+        feedback: [`Error: ${error}`],
+        timeSpent: timeSpent,
+        attempts: 1
       })
     } finally {
       setIsRunning(false)
@@ -77,7 +77,7 @@ export default function InteractiveExercise({
 
   const handleShowHint = () => {
     if (!exercise) return
-    const nextHint = (currentHint + 1) % exercise.content.hints.length
+    const nextHint = (currentHint + 1) % exercise.hints.length
     setCurrentHint(nextHint)
   }
 
@@ -162,7 +162,7 @@ export default function InteractiveExercise({
               onClick={handleShowHint}
               className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
             >
-              💡 Hint ({currentHint + 1}/{exercise.content.hints.length})
+              💡 Hint ({currentHint + 1}/{exercise.hints.length})
             </button>
 
             <button
@@ -174,10 +174,10 @@ export default function InteractiveExercise({
           </div>
 
           {/* Hints */}
-          {exercise.content.hints.length > 0 && (
+          {exercise.hints.length > 0 && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
               <h4 className="font-semibold text-yellow-800 mb-1">Hint {currentHint + 1}:</h4>
-              <p className="text-yellow-700">{exercise.content.hints[currentHint]}</p>
+              <p className="text-yellow-700">{exercise.hints[currentHint]}</p>
             </div>
           )}
 
@@ -186,9 +186,9 @@ export default function InteractiveExercise({
             <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
               <h4 className="font-semibold text-purple-800 mb-2">Solution:</h4>
               <pre className="bg-white p-3 rounded border text-sm overflow-x-auto">
-                <code>{exercise.content.solution}</code>
+                <code>{exercise.solution}</code>
               </pre>
-              <p className="text-purple-700 mt-2 text-sm">{exercise.content.explanation}</p>
+              <p className="text-purple-700 mt-2 text-sm">Great job! Here's the solution.</p>
             </div>
           )}
         </div>
@@ -199,7 +199,7 @@ export default function InteractiveExercise({
           <div>
             <h3 className="font-semibold text-gray-800 mb-2">Expected Output</h3>
             <div className="bg-gray-100 p-3 rounded-lg">
-              <pre className="text-sm whitespace-pre-wrap">{exercise.content.expectedOutput}</pre>
+              <pre className="text-sm whitespace-pre-wrap">Check the test cases for expected output</pre>
             </div>
           </div>
 
@@ -210,7 +210,7 @@ export default function InteractiveExercise({
               <div className="space-y-2">
                 {result.testResults.map((testResult) => (
                   <div
-                    key={testResult.testCaseId}
+                    key={testResult.testCase.id}
                     className={`p-3 rounded-lg border ${
                       testResult.passed
                         ? 'bg-green-50 border-green-200'
@@ -219,7 +219,7 @@ export default function InteractiveExercise({
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-medium">
-                        {testResult.passed ? '✅' : '❌'} Test {testResult.testCaseId}
+                        {testResult.passed ? '✅' : '❌'} Test {testResult.testCase.id}
                       </span>
                       <span className={`text-sm ${testResult.passed ? 'text-green-600' : 'text-red-600'}`}>
                         {testResult.passed ? 'PASSED' : 'FAILED'}
@@ -227,7 +227,7 @@ export default function InteractiveExercise({
                     </div>
                     {!testResult.passed && (
                       <div className="mt-2 text-sm text-gray-600">
-                        <div>Expected: <code className="bg-white px-1 rounded">{testResult.expectedOutput}</code></div>
+                        <div>Expected: <code className="bg-white px-1 rounded">{testResult.testCase.expectedOutput}</code></div>
                         <div>Got: <code className="bg-white px-1 rounded">{testResult.actualOutput}</code></div>
                         {testResult.error && (
                           <div className="text-red-600 mt-1">Error: {testResult.error}</div>
@@ -245,13 +245,13 @@ export default function InteractiveExercise({
             <div>
               <h3 className="font-semibold text-gray-800 mb-2">Feedback</h3>
               <div className={`p-3 rounded-lg border ${
-                result.passed
+                result.success
                   ? 'bg-green-50 border-green-200'
                   : 'bg-red-50 border-red-200'
               }`}>
                 <div className="flex items-center mb-2">
                   <span className="font-semibold">
-                    {result.passed ? '🎉 Success!' : '❌ Needs Improvement'}
+                    {result.success ? '🎉 Success!' : '❌ Needs Improvement'}
                   </span>
                   <span className="ml-auto text-sm">
                     Score: {result.score}/100
@@ -262,9 +262,9 @@ export default function InteractiveExercise({
                     <p key={index} className="text-sm">{feedback}</p>
                   ))}
                 </div>
-                {result.executionTime > 0 && (
+                {result.timeSpent > 0 && (
                   <p className="text-xs text-gray-500 mt-2">
-                    Execution time: {result.executionTime}ms
+                    Time spent: {result.timeSpent}s
                   </p>
                 )}
               </div>
@@ -279,9 +279,7 @@ export default function InteractiveExercise({
               <div><span className="font-medium">Language:</span> {exercise.language.charAt(0).toUpperCase() + exercise.language.slice(1)}</div>
               <div><span className="font-medium">Level:</span> {exercise.level.charAt(0).toUpperCase() + exercise.level.slice(1)}</div>
               <div><span className="font-medium">Difficulty:</span> {exercise.difficulty.charAt(0).toUpperCase() + exercise.difficulty.slice(1)}</div>
-              {exercise.metadata.timeLimit && (
-                <div><span className="font-medium">Time Limit:</span> {exercise.metadata.timeLimit} minutes</div>
-              )}
+              <div><span className="font-medium">Estimated Time:</span> {exercise.estimatedTime} minutes</div>
             </div>
           </div>
         </div>
