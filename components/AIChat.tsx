@@ -39,7 +39,7 @@ export default function AIChat({ paths }: AIChatProps) {
     {
       id: '1',
       type: 'ai',
-      content: "Hey there! I'm Dev, your AI programming tutor! 🚀\n\nTell me what you want to learn or build, and I'll create a personalized learning plan and recommend the perfect learning path for you. For example:\n\n• \"I want to build a website\"\n• \"I want to create a mobile app\"\n• \"I want to learn data science\"\n• \"I want to automate tasks\"\n• \"I want to make games\"\n• \"I want to work with AI\"\n\nWhat's your goal?",
+      content: "Hey there! I'm Dev, your AI programming tutor!\n\nTell me what you want to learn or build, and I'll create a personalized learning plan and recommend the perfect learning path for you. For example:\n\n- I want to build a website\n- I want to create a mobile app\n- I want to learn data science\n- I want to automate tasks\n- I want to make games\n- I want to work with AI\n\nWhat's your goal?",
       timestamp: new Date()
     }
   ])
