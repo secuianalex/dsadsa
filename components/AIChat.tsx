@@ -227,18 +227,59 @@ export default function AIChat({ paths }: AIChatProps) {
       languages: string[]
     }
   }> => {
-    // Simulate AI response generation
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000))
+    try {
+      const response = await fetch('/api/ai-chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          context: {
+            language: 'general',
+            level: 'beginner',
+            concept: 'learning-path-selection'
+          }
+        }),
+      })
 
-    const analysis = analyzeUserGoal(userMessage)
-    
-    return {
-      response: analysis.response,
-      recommendation: {
-        pathSlug: analysis.recommendedPath,
-        pathTitle: analysis.pathTitle,
-        pathDescription: analysis.pathDescription,
-        languages: analysis.languages
+      if (!response.ok) {
+        throw new Error('Failed to get AI response')
+      }
+
+      const data = await response.json()
+      
+      if (data.error) {
+        // Return fallback response if API fails
+        return {
+          response: data.fallback || "I'm having trouble connecting to my AI services right now, but I can still help you! What would you like to learn? I can recommend learning paths for web development, mobile apps, data science, AI, game development, and more. Just tell me your goal! 🚀",
+          recommendation: {
+            pathSlug: 'frontend-development',
+            pathTitle: 'Frontend Development',
+            pathDescription: 'Master the art of creating beautiful, interactive user interfaces',
+            languages: ['html', 'css', 'javascript']
+          }
+        }
+      }
+
+      return {
+        response: data.response,
+        recommendation: data.recommendation
+      }
+    } catch (error) {
+      console.error('AI Chat Error:', error)
+      
+      // Fallback to static analysis if API fails
+      const analysis = analyzeUserGoal(userMessage)
+      
+      return {
+        response: analysis.response,
+        recommendation: {
+          pathSlug: analysis.recommendedPath,
+          pathTitle: analysis.pathTitle,
+          pathDescription: analysis.pathDescription,
+          languages: analysis.languages
+        }
       }
     }
   }

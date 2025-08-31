@@ -1,0 +1,165 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { generateAIResponse } from '@/lib/openai'
+
+export async function POST(request: NextRequest) {
+  try {
+    const { message, context } = await request.json()
+
+    if (!message || typeof message !== 'string') {
+      return NextResponse.json(
+        { error: 'Message is required and must be a string' },
+        { status: 400 }
+      )
+    }
+
+    // Create a teaching prompt for the AI
+    const teachingPrompt = {
+      systemPrompt: `You are Dev, an AI programming tutor and mentor. You help students learn programming by providing:
+
+1. **Personalized Learning Plans**: Based on their goals and current level
+2. **Clear Explanations**: Break down complex concepts into simple terms
+3. **Practical Examples**: Provide real code examples and projects
+4. **Motivation**: Encourage and support their learning journey
+5. **Path Recommendations**: Suggest the best learning paths for their goals
+
+**Your Personality:**
+- Friendly, encouraging, and patient
+- Use emojis and casual language to keep it engaging
+- Provide specific, actionable advice
+- Ask follow-up questions to better understand their needs
+- Always suggest next steps in their learning journey
+
+**Available Learning Paths:**
+- Frontend Development (HTML, CSS, JavaScript, React)
+- Web Development (Full-stack with Node.js, databases)
+- Mobile Development (React Native, Flutter, native apps)
+- Data Science & Analytics (Python, SQL, machine learning)
+- AI & Machine Learning (Python, TensorFlow, neural networks)
+- Game Development (Unity, Unreal Engine, game programming)
+- Backend Development (Server-side programming, APIs)
+- DevOps & Cloud (Docker, Kubernetes, cloud platforms)
+- Scripting & Automation (Python, bash, task automation)
+- Systems Programming (C, C++, Rust, low-level programming)
+- Testing (Manual testing, automation, quality assurance)
+
+**Response Format:**
+- Start with a friendly greeting and acknowledgment
+- Provide specific recommendations based on their goal
+- Include relevant learning paths and technologies
+- Give estimated timeframes for learning
+- End with an encouraging call-to-action
+- Use markdown formatting for better readability
+
+Remember: You're not just answering questions, you're mentoring someone on their programming journey!`,
+
+      userPrompt: `Student says: "${message}"
+
+Please provide a personalized response that:
+1. Acknowledges their goal
+2. Recommends the most suitable learning path(s)
+3. Explains what they'll learn and why it's perfect for them
+4. Gives realistic timeframes
+5. Encourages them to start their journey
+
+Make it engaging, specific, and actionable!`,
+
+      context: {
+        language: 'general',
+        level: 'beginner',
+        concept: 'learning-path-selection',
+        userProgress: 0,
+        learningStyle: 'adaptive'
+      }
+    }
+
+    // Generate AI response
+    const aiResponse = await generateAIResponse(teachingPrompt, message)
+
+    // Extract learning path recommendation from the response
+    const responseText = aiResponse.content.toLowerCase()
+    let recommendedPath = 'frontend-development' // default
+    let pathTitle = 'Frontend Development'
+    let pathDescription = 'Master the art of creating beautiful, interactive user interfaces'
+    let languages = ['html', 'css', 'javascript']
+
+    // Analyze response to determine recommended path
+    if (responseText.includes('frontend') || responseText.includes('website') || responseText.includes('html') || responseText.includes('css')) {
+      recommendedPath = 'frontend-development'
+      pathTitle = 'Frontend Development'
+      pathDescription = 'Master the art of creating beautiful, interactive user interfaces'
+      languages = ['html', 'css', 'javascript', 'react']
+    } else if (responseText.includes('full stack') || responseText.includes('web app') || responseText.includes('backend')) {
+      recommendedPath = 'web-development'
+      pathTitle = 'Web Development'
+      pathDescription = 'Master modern web development from frontend to backend'
+      languages = ['html', 'css', 'javascript', 'react', 'nodejs', 'sql']
+    } else if (responseText.includes('mobile') || responseText.includes('app') || responseText.includes('ios') || responseText.includes('android')) {
+      recommendedPath = 'mobile-development'
+      pathTitle = 'Mobile Development'
+      pathDescription = 'Build native and cross-platform mobile applications'
+      languages = ['react-native', 'flutter', 'swift', 'kotlin']
+    } else if (responseText.includes('data') || responseText.includes('analytics') || responseText.includes('machine learning')) {
+      recommendedPath = 'data-science-analytics'
+      pathTitle = 'Data Science & Analytics'
+      pathDescription = 'Machine learning, data analysis, and artificial intelligence'
+      languages = ['python', 'sql', 'tensorflow', 'pandas']
+    } else if (responseText.includes('ai') || responseText.includes('artificial intelligence') || responseText.includes('neural network')) {
+      recommendedPath = 'ai-machine-learning'
+      pathTitle = 'AI & Machine Learning'
+      pathDescription = 'Create intelligent systems and predictive models'
+      languages = ['python', 'tensorflow', 'pytorch', 'scikit-learn']
+    } else if (responseText.includes('game') || responseText.includes('unity') || responseText.includes('unreal')) {
+      recommendedPath = 'game-development'
+      pathTitle = 'Game Development'
+      pathDescription = 'Create 2D and 3D games for multiple platforms'
+      languages = ['csharp', 'cpp', 'javascript', 'unity']
+    } else if (responseText.includes('backend') || responseText.includes('server') || responseText.includes('api')) {
+      recommendedPath = 'backend-development'
+      pathTitle = 'Backend Development'
+      pathDescription = 'Server-side programming and database management'
+      languages = ['python', 'java', 'nodejs', 'sql']
+    } else if (responseText.includes('devops') || responseText.includes('cloud') || responseText.includes('deploy')) {
+      recommendedPath = 'devops-cloud'
+      pathTitle = 'DevOps & Cloud'
+      pathDescription = 'Infrastructure, deployment, and cloud computing'
+      languages = ['bash', 'docker', 'kubernetes', 'terraform']
+    } else if (responseText.includes('automate') || responseText.includes('script') || responseText.includes('tools')) {
+      recommendedPath = 'scripting-automation'
+      pathTitle = 'Scripting & Automation'
+      pathDescription = 'Automate tasks and build powerful tools'
+      languages = ['python', 'bash', 'powershell']
+    } else if (responseText.includes('system') || responseText.includes('low level') || responseText.includes('performance')) {
+      recommendedPath = 'systems-programming'
+      pathTitle = 'Systems Programming'
+      pathDescription = 'Low-level programming and operating system development'
+      languages = ['c', 'cpp', 'rust', 'assembly']
+    } else if (responseText.includes('test') || responseText.includes('quality') || responseText.includes('qa')) {
+      recommendedPath = 'testing'
+      pathTitle = 'Testing'
+      pathDescription = 'Master software testing from fundamentals to automation'
+      languages = ['testing-fundamentals', 'selenium', 'postman']
+    }
+
+    return NextResponse.json({
+      response: aiResponse.content,
+      recommendation: {
+        pathSlug: recommendedPath,
+        pathTitle,
+        pathDescription,
+        languages
+      },
+      metadata: aiResponse.metadata
+    })
+
+  } catch (error) {
+    console.error('AI Chat API Error:', error)
+    
+    return NextResponse.json(
+      { 
+        error: 'Failed to generate AI response',
+        fallback: "I'm having trouble connecting to my AI services right now, but I can still help you! What would you like to learn? I can recommend learning paths for web development, mobile apps, data science, AI, game development, and more. Just tell me your goal! 🚀"
+      },
+      { status: 500 }
+    )
+  }
+}
