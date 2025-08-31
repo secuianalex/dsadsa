@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateAIResponse } from '@/lib/openai'
+import OpenAI from 'openai'
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,9 +12,25 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create a teaching prompt for the AI
-    const teachingPrompt = {
-      systemPrompt: `You are Dev, an AI programming tutor and mentor. You help students learn programming by providing:
+    // Check if OpenAI API key is available
+    if (!process.env.OPENAI_API_KEY) {
+      console.error('OpenAI API key not found')
+      return NextResponse.json(
+        { 
+          error: 'OpenAI API key not configured',
+          fallback: "I'm having trouble connecting to my AI services right now, but I can still help you! What would you like to learn? I can recommend learning paths for web development, mobile apps, data science, AI, game development, and more. Just tell me your goal! 🚀"
+        },
+        { status: 500 }
+      )
+    }
+
+    // Initialize OpenAI client
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+
+    // Create the system prompt
+    const systemPrompt = `You are Dev, an AI programming tutor and mentor. You help students learn programming by providing:
 
 1. **Personalized Learning Plans**: Based on their goals and current level
 2. **Clear Explanations**: Break down complex concepts into simple terms
@@ -50,9 +66,19 @@ export async function POST(request: NextRequest) {
 - End with an encouraging call-to-action
 - Use markdown formatting for better readability
 
-Remember: You're not just answering questions, you're mentoring someone on their programming journey!`,
+Remember: You're not just answering questions, you're mentoring someone on their programming journey!`
 
-      userPrompt: `Student says: "${message}"
+    // Generate AI response
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+        {
+          role: "user",
+          content: `Student says: "${message}"
 
 Please provide a personalized response that:
 1. Acknowledges their goal
@@ -61,22 +87,19 @@ Please provide a personalized response that:
 4. Gives realistic timeframes
 5. Encourages them to start their journey
 
-Make it engaging, specific, and actionable!`,
+Make it engaging, specific, and actionable!`
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 1500,
+      presence_penalty: 0.1,
+      frequency_penalty: 0.1
+    })
 
-      context: {
-        language: 'general',
-        level: 'beginner',
-        concept: 'learning-path-selection',
-        userProgress: 0,
-        learningStyle: 'adaptive'
-      }
-    }
-
-    // Generate AI response
-    const aiResponse = await generateAIResponse(teachingPrompt, message)
+    const aiResponse = completion.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response right now."
 
     // Extract learning path recommendation from the response
-    const responseText = aiResponse.content.toLowerCase()
+    const responseText = aiResponse.toLowerCase()
     let recommendedPath = 'frontend-development' // default
     let pathTitle = 'Frontend Development'
     let pathDescription = 'Master the art of creating beautiful, interactive user interfaces'
@@ -141,14 +164,13 @@ Make it engaging, specific, and actionable!`,
     }
 
     return NextResponse.json({
-      response: aiResponse.content,
+      response: aiResponse,
       recommendation: {
         pathSlug: recommendedPath,
         pathTitle,
         pathDescription,
         languages
-      },
-      metadata: aiResponse.metadata
+      }
     })
 
   } catch (error) {
