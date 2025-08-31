@@ -5,6 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { useSession } from "next-auth/react"
 import { useState } from "react"
+import { useRouter, usePathname } from "next/navigation"
 import ThemeToggle from "@/components/ThemeToggle"
 import UserMenu from "@/components/UserMenu"
 import LanguageSelector from "@/components/LanguageSelector"
@@ -15,11 +16,20 @@ export default function NavBar() {
   const { locale } = useLocale()
   const { data: session } = useSession()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const router = useRouter()
+  const pathname = usePathname()
   
   const LINKS = [
     { href: "/languages", label: t(locale, "nav.languages") },
     { href: "/paths", label: t(locale, "nav.learningPaths") },
   ]
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    if (pathname === "/") {
+      e.preventDefault()
+      window.location.reload()
+    }
+  }
 
   return (
     <nav className="sticky top-0 z-50 border-b" style={{
@@ -28,7 +38,7 @@ export default function NavBar() {
     }}>
       <div className="mx-auto flex items-center justify-between w-full max-w-[72rem] px-4 md:px-6 lg:px-8 h-14">
         {/* Logo + Brand */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg" style={{ color: 'var(--text-primary)' }}>
+        <Link href="/" className="flex items-center gap-2 font-bold text-lg" style={{ color: 'var(--text-primary)' }} onClick={handleLogoClick}>
           <div className="flex flex-col items-center">
             <Image src="/logo-mark.svg" alt="LearnMe" width={28} height={28} />
             <span className="text-xs font-semibold bg-blue-500 text-white px-1 rounded text-center leading-tight" style={{ fontSize: '8px', lineHeight: '1' }}>

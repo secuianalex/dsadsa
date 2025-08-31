@@ -3,6 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useSession } from "next-auth/react"
+import { useEffect } from "react"
 import StatsBar from "@/components/Stats"
 import AIChat from "@/components/AIChat"
 import { useLocale } from "@/components/LocaleProvider"
@@ -11,6 +12,33 @@ import { t } from "@/lib/translations"
 export default function HomePage() {
   const { locale } = useLocale()
   const { data: session } = useSession()
+
+  // Ensure page scrolls to top on load and refresh
+  useEffect(() => {
+    // Scroll to top immediately
+    window.scrollTo(0, 0)
+    
+    // Also handle the case where the page might have been cached
+    const handleBeforeUnload = () => {
+      sessionStorage.setItem('scrollPosition', '0')
+    }
+    
+    const handleLoad = () => {
+      const savedPosition = sessionStorage.getItem('scrollPosition')
+      if (savedPosition === '0') {
+        window.scrollTo(0, 0)
+        sessionStorage.removeItem('scrollPosition')
+      }
+    }
+    
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    window.addEventListener('load', handleLoad)
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      window.removeEventListener('load', handleLoad)
+    }
+  }, [])
 
   return (
     <div className="space-y-8 md:space-y-16">
