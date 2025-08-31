@@ -46,9 +46,12 @@ export default function AIChat({ paths }: AIChatProps) {
   const [inputValue, setInputValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+    }
   }
 
   useEffect(() => {
@@ -353,7 +356,7 @@ export default function AIChat({ paths }: AIChatProps) {
       </div>
 
       {/* Messages */}
-      <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
+      <div className="space-y-4 mb-6 max-h-96 overflow-y-auto" ref={messagesContainerRef}>
         {messages.map((message) => (
           <div
             key={message.id}

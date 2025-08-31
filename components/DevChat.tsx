@@ -100,6 +100,14 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
   const [codeValue, setCodeValue] = useState("")
   const [codeOutput, setCodeOutput] = useState("")
   const [isRunningCode, setIsRunningCode] = useState(false)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
+  
+  const scrollToBottom = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+    }
+  }
+  
   const [userProgress, setUserProgress] = useState<UserProgress>(() =>
     initializeProgress(language, level)
   )
@@ -198,6 +206,14 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
       completedConcepts: []
     }))
   }, [selectedLanguage, selectedLevel])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [isLoading])
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isLoading) return
@@ -1074,7 +1090,7 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
         {currentView === 'chat' && (
           <div className="flex flex-col h-full">
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4" ref={messagesContainerRef}>
               {messages.map((message) => (
                 <div
                   key={message.id}
