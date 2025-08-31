@@ -134,10 +134,10 @@ export default function AchievementDisplay({
           return (
             <div
               key={achievement.id}
-              className={`bg-white rounded-lg border-2 p-4 transition-all duration-200 ${
+              className={`bg-white dark:bg-gray-800 rounded-lg border-2 p-4 transition-all duration-200 ${
                 isUnlocked 
-                  ? 'border-green-200 shadow-lg' 
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-green-200 dark:border-green-600 shadow-lg' 
+                  : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
               }`}
             >
               {/* Achievement Header */}
@@ -147,7 +147,7 @@ export default function AchievementDisplay({
                     {achievement.icon}
                   </div>
                   <div>
-                    <h3 className={`font-semibold ${isUnlocked ? 'text-gray-800' : 'text-gray-600'}`}>
+                    <h3 className={`font-semibold ${isUnlocked ? 'text-gray-800 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>
                       {achievement.title}
                     </h3>
                     <p className={`text-xs ${getRarityColor(achievement.rarity)} font-medium`}>
@@ -164,17 +164,17 @@ export default function AchievementDisplay({
               </div>
 
               {/* Description */}
-              <p className={`text-sm mb-3 ${isUnlocked ? 'text-gray-700' : 'text-gray-500'}`}>
+              <p className={`text-sm mb-3 ${isUnlocked ? 'text-gray-700 dark:text-gray-200' : 'text-gray-500 dark:text-gray-400'}`}>
                 {achievement.description}
               </p>
 
               {/* Progress Bar */}
               <div className="mb-3">
-                <div className="flex justify-between text-xs text-gray-500 mb-1">
+                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
                   <span>Progress</span>
                   <span>{progress.current}/{progress.required}</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                   <div
                     className={`h-2 rounded-full transition-all duration-300 ${
                       isUnlocked ? 'bg-green-500' : 'bg-blue-500'
@@ -187,7 +187,7 @@ export default function AchievementDisplay({
               {/* Status */}
               <div className="flex items-center justify-between">
                 <span className={`text-xs font-medium ${
-                  isUnlocked ? 'text-green-600' : 'text-gray-500'
+                  isUnlocked ? 'text-green-600' : 'text-gray-500 dark:text-gray-400'
                 }`}>
                   {isUnlocked ? '✅ Unlocked' : `${progress.percentage}% Complete`}
                 </span>
@@ -203,10 +203,10 @@ export default function AchievementDisplay({
       {/* Certifications Section */}
       {certifications.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Your Certifications</h2>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Your Certifications</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {certifications.map((cert) => (
-              <div key={cert.id} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-lg transition-shadow">
+              <div key={cert.id} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 p-4 hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">🎓</span>

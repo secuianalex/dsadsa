@@ -110,7 +110,7 @@ export default function ProjectWorkspace({ project, onComplete }: ProjectWorkspa
   }
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg shadow-lg">
+    <div className="flex flex-col h-full bg-white dark:bg-gray-800 rounded-lg shadow-lg">
       {/* Header */}
       <div className="p-4 border-b bg-gradient-to-r from-green-500 to-blue-600 text-white rounded-t-lg">
         <div className="flex items-center justify-between">
@@ -127,19 +127,19 @@ export default function ProjectWorkspace({ project, onComplete }: ProjectWorkspa
 
       <div className="flex flex-1 overflow-hidden">
         {/* Left Panel - Project Info and Requirements */}
-        <div className="w-1/3 border-r border-gray-200 flex flex-col">
-          <div className="p-4 border-b">
-            <h3 className="font-semibold text-gray-800 mb-2">Project Description</h3>
-            <p className="text-sm text-gray-600">{project.description}</p>
+        <div className="w-1/3 border-r border-gray-200 dark:border-gray-600 flex flex-col">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-600">
+            <h3 className="font-semibold text-gray-800 dark:text-white mb-2">Project Description</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300">{project.description}</p>
           </div>
 
           <div className="flex-1 p-4 overflow-y-auto">
-            <h3 className="font-semibold text-gray-800 mb-3">Requirements</h3>
+            <h3 className="font-semibold text-gray-800 dark:text-white mb-3">Requirements</h3>
             <ul className="space-y-2">
               {project.requirements.map((req, index) => (
                 <li key={index} className="flex items-start gap-2 text-sm">
                   <span className="text-blue-500 font-bold">{index + 1}.</span>
-                  <span className="text-gray-700">{req}</span>
+                  <span className="text-gray-700 dark:text-gray-300">{req}</span>
                 </li>
               ))}
             </ul>
@@ -147,21 +147,21 @@ export default function ProjectWorkspace({ project, onComplete }: ProjectWorkspa
             {/* Hints Section */}
             <div className="mt-6">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="font-semibold text-gray-800">Hints</h3>
+                <h3 className="font-semibold text-gray-800 dark:text-white">Hints</h3>
                 <button
                   onClick={() => setShowHints(!showHints)}
-                  className="text-sm text-blue-500 hover:text-blue-700"
+                  className="text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400"
                 >
                   {showHints ? 'Hide' : 'Show'} Hints
                 </button>
               </div>
               
               {showHints && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                  <div className="text-sm text-gray-700 mb-2">
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-600 rounded-lg p-3">
+                  <div className="text-sm text-gray-700 dark:text-gray-300 mb-2">
                     Hint {currentHint + 1} of {project.hints.length}
                   </div>
-                  <p className="text-sm text-gray-800 mb-3">
+                  <p className="text-sm text-gray-800 dark:text-white mb-3">
                     {project.hints[currentHint]}
                   </p>
                   <div className="flex gap-2">
@@ -190,9 +190,9 @@ export default function ProjectWorkspace({ project, onComplete }: ProjectWorkspa
         <div className="flex-1 flex flex-col">
           {/* Code Editor */}
           <div className="flex-1 flex flex-col">
-            <div className="p-4 border-b bg-gray-50">
+            <div className="p-4 border-b bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-gray-800">Code Editor</h3>
+                <h3 className="font-semibold text-gray-800 dark:text-white">Code Editor</h3>
                 <div className="flex gap-2">
                   <button
                     onClick={runCode}

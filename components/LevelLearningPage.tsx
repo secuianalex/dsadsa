@@ -67,15 +67,15 @@ export default function LevelLearningPage({ language, level }: LevelLearningPage
   const levelInfo = getLevelInfo(level)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link 
                 href={`/languages/${language.slug}`}
-                className="text-sm text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-2"
+                className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors flex items-center gap-2"
               >
                 <span>←</span>
                 Back to {language.name}
@@ -85,9 +85,9 @@ export default function LevelLearningPage({ language, level }: LevelLearningPage
             <div className="text-center">
               <div className="flex items-center gap-2 justify-center mb-1">
                 <span className="text-2xl">{levelInfo.icon}</span>
-                <h1 className="text-xl font-bold">{language.name}</h1>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">{language.name}</h1>
               </div>
-              <p className="text-sm text-gray-600">{levelInfo.title}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{levelInfo.title}</p>
             </div>
 
             <div className="w-24"></div> {/* Spacer for centering */}
@@ -98,10 +98,10 @@ export default function LevelLearningPage({ language, level }: LevelLearningPage
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="mb-6 text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
             Learn with Dev
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Meet Dev, your AI programming tutor! I'll guide you through {language.name} at the {level} level. 
             Ask me anything about programming concepts, get exercises, and practice coding in real-time.
           </p>
@@ -113,7 +113,7 @@ export default function LevelLearningPage({ language, level }: LevelLearningPage
         </div>
 
         {/* Footer Info */}
-        <div className="mt-6 text-center text-sm text-gray-500">
+        <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
           <p>
             <strong>Available topics for {level} level:</strong> Variables, Functions, Conditionals, Loops, and more!
           </p>

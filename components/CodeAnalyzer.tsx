@@ -88,10 +88,10 @@ export default function CodeAnalyzer({
 
   if (isAnalyzing) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 p-6">
         <div className="flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mr-3"></div>
-          <span className="text-gray-600">Analyzing code...</span>
+          <span className="text-gray-600 dark:text-gray-300">Analyzing code...</span>
         </div>
       </div>
     )
@@ -99,8 +99,8 @@ export default function CodeAnalyzer({
 
   if (!analysis) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="text-center text-gray-500">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 p-6">
+        <div className="text-center text-gray-500 dark:text-gray-400">
           <div className="text-4xl mb-2">🔍</div>
           <p>Enter code to analyze</p>
         </div>
@@ -109,12 +109,12 @@ export default function CodeAnalyzer({
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-600">
         <div>
-          <h3 className="text-lg font-semibold text-gray-800">Code Analysis</h3>
-          <p className="text-sm text-gray-500">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Code Analysis</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             {analysis.language} • {analysis.analysis.syntax.lineCount} lines • {analysis.analysis.syntax.characterCount} characters
           </p>
         </div>
@@ -127,7 +127,7 @@ export default function CodeAnalyzer({
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200">
+      <div className="flex border-b border-gray-200 dark:border-gray-600">
         {[
           { id: 'overview', label: 'Overview', icon: '📊' },
           { id: 'syntax', label: 'Syntax', icon: '🔤' },
@@ -142,7 +142,7 @@ export default function CodeAnalyzer({
             className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
               activeTab === tab.id
                 ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-500 hover:text-gray-700'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
             }`}
           >
             <span>{tab.icon}</span>

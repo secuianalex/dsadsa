@@ -101,7 +101,7 @@ export default function InteractiveExercise({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-green-500 to-blue-600 text-white p-4">
         <div className="flex items-center justify-between">
@@ -130,12 +130,12 @@ export default function InteractiveExercise({
         {/* Left Column - Code Editor */}
         <div className="space-y-4">
           <div>
-            <h3 className="font-semibold text-gray-800 mb-2">Your Code</h3>
-            <div className="border border-gray-300 rounded-lg overflow-hidden">
+            <h3 className="font-semibold text-gray-800 dark:text-white mb-2">Your Code</h3>
+            <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
               <textarea
                 value={userCode}
                 onChange={(e) => setUserCode(e.target.value)}
-                className="w-full h-64 p-4 font-mono text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                className="w-full h-64 p-4 font-mono text-sm bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 placeholder="Write your code here..."
               />
             </div>
@@ -175,20 +175,20 @@ export default function InteractiveExercise({
 
           {/* Hints */}
           {exercise.hints.length > 0 && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-              <h4 className="font-semibold text-yellow-800 mb-1">Hint {currentHint + 1}:</h4>
-              <p className="text-yellow-700">{exercise.hints[currentHint]}</p>
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-600 rounded-lg p-3">
+              <h4 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-1">Hint {currentHint + 1}:</h4>
+              <p className="text-yellow-700 dark:text-yellow-300">{exercise.hints[currentHint]}</p>
             </div>
           )}
 
           {/* Solution */}
           {showSolution && (
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
-              <h4 className="font-semibold text-purple-800 mb-2">Solution:</h4>
-              <pre className="bg-white p-3 rounded border text-sm overflow-x-auto">
-                <code>{exercise.solution}</code>
+            <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-600 rounded-lg p-3">
+              <h4 className="font-semibold text-purple-800 dark:text-purple-200 mb-2">Solution:</h4>
+              <pre className="bg-white dark:bg-gray-700 p-3 rounded border dark:border-gray-600 text-sm overflow-x-auto">
+                <code className="text-gray-900 dark:text-white">{exercise.solution}</code>
               </pre>
-              <p className="text-purple-700 mt-2 text-sm">Great job! Here's the solution.</p>
+              <p className="text-purple-700 dark:text-purple-300 mt-2 text-sm">Great job! Here's the solution.</p>
             </div>
           )}
         </div>

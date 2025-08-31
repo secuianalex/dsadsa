@@ -183,27 +183,27 @@ export default function StudyGroupBrowser({
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 p-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Search */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Search</label>
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search groups..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           {/* Language Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Language</label>
             <select
               value={selectedLanguage}
               onChange={(e) => setSelectedLanguage(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Languages</option>
               <option value="javascript">JavaScript</option>
@@ -217,11 +217,11 @@ export default function StudyGroupBrowser({
 
           {/* Level Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Level</label>
             <select
               value={selectedLevel}
               onChange={(e) => setSelectedLevel(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Levels</option>
               <option value="beginner">Beginner</option>
@@ -232,11 +232,11 @@ export default function StudyGroupBrowser({
 
           {/* Sort By */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sort By</label>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'activity' | 'members' | 'newest')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="activity">Most Active</option>
               <option value="members">Most Members</option>
@@ -248,8 +248,8 @@ export default function StudyGroupBrowser({
 
       {/* Create Group Form */}
       {showCreateForm && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Create New Study Group</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 p-6">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Create New Study Group</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Group Name *</label>
