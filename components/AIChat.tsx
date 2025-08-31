@@ -228,6 +228,8 @@ export default function AIChat({ paths }: AIChatProps) {
     }
   }> => {
     try {
+      console.log('Calling AI API with message:', userMessage)
+      
       const response = await fetch('/api/ai-chat', {
         method: 'POST',
         headers: {
@@ -243,13 +245,19 @@ export default function AIChat({ paths }: AIChatProps) {
         }),
       })
 
+      console.log('API Response status:', response.status)
+      console.log('API Response ok:', response.ok)
+
       if (!response.ok) {
+        console.error('API Response not ok:', response.status, response.statusText)
         throw new Error('Failed to get AI response')
       }
 
       const data = await response.json()
+      console.log('API Response data:', data)
       
       if (data.error) {
+        console.error('API returned error:', data.error)
         // Return fallback response if API fails
         return {
           response: data.fallback || "I'm having trouble connecting to my AI services right now, but I can still help you! What would you like to learn? I can recommend learning paths for web development, mobile apps, data science, AI, game development, and more. Just tell me your goal! 🚀",
@@ -262,6 +270,7 @@ export default function AIChat({ paths }: AIChatProps) {
         }
       }
 
+      console.log('Returning AI response:', data.response)
       return {
         response: data.response,
         recommendation: data.recommendation
@@ -271,6 +280,7 @@ export default function AIChat({ paths }: AIChatProps) {
       
       // Fallback to static analysis if API fails
       const analysis = analyzeUserGoal(userMessage)
+      console.log('Using fallback static response')
       
       return {
         response: analysis.response,
