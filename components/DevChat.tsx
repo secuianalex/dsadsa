@@ -68,15 +68,28 @@ const SUPPORTED_LANGUAGES = [
   'assembly', 'vhdl', 'verilog', 'arduino', 'raspberry-pi',
   
   // Other Popular Technologies
-  'svelte', 'nextjs', 'nuxtjs', 'gatsby', 'webpack', 'babel', 'eslint', 'prettier'
+  'svelte', 'nextjs', 'nuxtjs', 'gatsby', 'webpack', 'babel', 'eslint', 'prettier',
+  
+  // Testing Technologies
+  'testing-fundamentals', 'manual-testing', 'automation-testing'
 ]
 
 export default function DevChat({ language = 'javascript', level = 'beginner' }: DevChatProps) {
+  const getWelcomeMessage = (lang: string, level: string) => {
+    const isTestingLanguage = ['testing-fundamentals', 'manual-testing', 'automation-testing'].includes(lang)
+    
+    if (isTestingLanguage) {
+      return `Hey there! I'm Dev, your AI testing tutor! 🧪\n\nI see you're learning ${lang.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())} at the ${level} level. I'm here to guide you through your testing journey step by step.\n\nWhat would you like to learn first?\n• Testing Fundamentals\n• Test Case Design\n• Manual Testing Techniques\n• Automation Tools\n• Best Practices\n\nJust tell me what interests you, or ask me to explain any concept!`
+    } else {
+      return `Hey there! I'm Dev, your AI programming tutor! 🚀\n\nI see you're learning ${lang} at the ${level} level. I'm here to guide you through your coding journey step by step.\n\nWhat would you like to learn first?\n• Variables and Data Types\n• Functions\n• Conditionals\n• Loops\n• Data Structures\n\nJust tell me what interests you, or ask me to explain any concept!`
+    }
+  }
+
   const [messages, setMessages] = useState<DevMessage[]>(() => [
     {
       id: '1',
       type: 'dev',
-      content: `Hey there! I'm Dev, your AI programming tutor! 🚀\n\nI see you're learning ${language} at the ${level} level. I'm here to guide you through your coding journey step by step.\n\nWhat would you like to learn first?\n• Variables and Data Types\n• Functions\n• Conditionals\n• Loops\n• Data Structures\n\nJust tell me what interests you, or ask me to explain any concept!`,
+      content: getWelcomeMessage(language, level),
       timestamp: new Date()
     }
   ])
@@ -406,7 +419,10 @@ export default function DevChat({ language = 'javascript', level = 'beginner' }:
             >
               {SUPPORTED_LANGUAGES.map(lang => (
                 <option key={lang} value={lang}>
-                  {lang.charAt(0).toUpperCase() + lang.slice(1).replace('-', ' ')}
+                  {lang === 'testing-fundamentals' ? 'Testing Fundamentals' :
+                   lang === 'manual-testing' ? 'Manual Testing' :
+                   lang === 'automation-testing' ? 'Automation Testing' :
+                   lang.charAt(0).toUpperCase() + lang.slice(1).replace('-', ' ')}
                 </option>
               ))}
             </select>

@@ -97,6 +97,15 @@ export default function PathsPage() {
       difficulty: "Advanced",
       duration: "8-12 months",
       icon: "💻"
+    },
+    {
+      slug: "testing",
+      title: "Testing",
+      description: "Master software testing from fundamentals to automation",
+      technologies: "Testing Fundamentals • Manual Testing • Automation Testing • Selenium • Postman",
+      difficulty: "Beginner to Advanced",
+      duration: "4-8 months",
+      icon: "🧪"
     }
   ];
 

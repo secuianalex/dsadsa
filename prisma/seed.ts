@@ -39,7 +39,10 @@ const langs = [
   "Assembly", "VHDL", "Verilog", "Arduino", "Raspberry Pi",
   
   // Other Popular Technologies
-  "Svelte", "Next.js", "Nuxt.js", "Gatsby", "Webpack", "Babel", "ESLint", "Prettier"
+  "Svelte", "Next.js", "Nuxt.js", "Gatsby", "Webpack", "Babel", "ESLint", "Prettier",
+  
+  // Testing Technologies
+  "Testing Fundamentals", "Manual Testing", "Automation Testing"
 ]
 
 // Comprehensive lesson content for each language
@@ -2767,6 +2770,12 @@ Ready to take your ${name} skills to the next level!
       title: "Systems Programming",
       description: "Build high-performance, low-level applications",
       languageSlugs: ["c", "c-plus-plus", "rust", "go", "assembly", "vhdl", "verilog"]
+    },
+    {
+      slug: "testing",
+      title: "Testing",
+      description: "Master software testing from fundamentals to automation",
+      languageSlugs: ["testing-fundamentals", "manual-testing", "automation-testing"]
     }
   ]
 
